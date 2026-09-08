@@ -1,6 +1,5 @@
 # Álgebra Relacional — Entrega 1
 
-Convenciones notacionales empleadas:
 Para las expresiones de álgebra relacional se utiliza el modelo inicial del proyecto, compuesto por:
 EDICION_MUNDIAL(id_edicion, anio, pais_sede, lema, fecha_inicio, fecha_fin)
 ESTADIO(id_estadio, id_edicion, nombre, ciudad, capacidad)
