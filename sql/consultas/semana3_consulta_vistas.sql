@@ -20,17 +20,25 @@ ORDER BY s.pais;
 
 --Consulta 8: estadios cuya ocupación estimada esté por
 --encima del promedio general de ocupación de todos los estadios (usando subconsulta correlacionada)
-SELECT DISTINCT e.nombre AS estadio, e.ciudad 
-FROM MORENOLUIS.FIFA_ESTADIO e 
-WHERE (
-  SELECT AVG(60 + MOD(p.id_partido *13, 35))
-  FROM MORENOLUIS.FIFA_PARTIDO p
-  WHERE p.id_estadio = e.id_estadio)
-  >
-  (SELECT AVG (60 + MOD(p2.id_partido *13,35))
-  FROM MORENOLUIS.FIFA_PARTIDO p2
-  )
-ORDER BY estadio;
+WITH ocupacion_estadio AS (
+  SELECT
+    e.id_estadio,
+    e.nombre AS estadio,
+    e.ciudad,
+    AVG(ap.asistencia_real / e.capacidad * 100) AS ocupacion_pct
+  FROM MORENOLUIS.FIFA_ESTADIO e
+  JOIN MORENOLUIS.FIFA_PARTIDO p ON p.id_estadio = e.id_estadio
+  JOIN ASISTENCIA_PARTIDO ap ON ap.id_partido = p.id_partido
+  GROUP BY e.id_estadio, e.nombre, e.ciudad
+)
+SELECT estadio, ciudad, ROUND(ocupacion_pct, 2) AS ocupacion_pct
+FROM ocupacion_estadio oe
+WHERE ocupacion_pct > (
+    SELECT AVG(oe2.ocupacion_pct)
+    FROM ocupacion_estadio oe2
+    WHERE oe2.id_estadio <> oe.id_estadio
+)
+ORDER BY ocupacion_pct DESC;
 
 -- Consulta 10: Selecciones con condición exclusiva: selecciones que jugaron todos sus partidos como
 --local, o que no jugaron ninguno como local (ejercicio análogo al operador de división del álgebra relacional).

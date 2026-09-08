@@ -55,9 +55,9 @@ Restricción definida en el DDL: fk_participaciones_partido, clave foránea de p
 
 Resultado esperado: el DELETE sobre partido se ejecuta con éxito, y participaciones_despues da cero, ya que las participaciones del partido eliminado se borran automáticamente en cascada.
 
-Resultado obtenido, participaciones_antes: (pegar aquí)//
+Resultado obtenido, participaciones_antes: 2
 
-Resultado obtenido, participaciones_despues: (pegar aquí)
+Resultado obtenido, participaciones_despues: 0
 
 Caso 5 — Comportamiento ON DELETE RESTRICT, de estadio y de seleccion hacia edicion_mundial
 

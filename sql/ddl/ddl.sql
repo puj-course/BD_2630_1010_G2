@@ -1,12 +1,12 @@
 --DDL Modelo inicial
 
 --Limpieza previa
-DROP TABLE participacion_partido;
-DROP TABLE partido;
-DROP TABLE seleccion;
-DROP TABLE estadio;
-DROP TABLE edicion_mundial;
-DROP TABLE asistencia_partido;
+DROP TABLE participacion_partido PURGE;
+DROP TABLE partido PURGE;
+DROP TABLE seleccion PURGE;
+DROP TABLE estadio PURGE;
+DROP TABLE edicion_mundial PURGE;
+DROP TABLE asistencia_partido PURGE;
 
 --1. Edición mundial 
 CREATE TABLE edicion_mundial (

@@ -32,4 +32,6 @@ GRANT UPDATE ON PARTIDO TO ROL_OPERATIVO_FIFA_G2;
 SELECT role, table_name, privilege
 FROM ROLE_TAB_PRIVS
 WHERE role IN ('ROL_CONSULTA_FIFA_G2', 'ROL_OPERATIVO_FIFA_G2')
-ORDER BY role, table_name, privilege;
+ORDER BY role, table_name, privilege;}
+
+PURGE RECYCLEBIN;

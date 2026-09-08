@@ -2,11 +2,12 @@
 -- Consultas 2 y 6 
 
 -- Consulta 2: Porcentaje de ocupación por estadio
-SELECT e.nombre AS estadio, e.ciudad, e.capacidad, 
-COUNT  (p.id_partido) AS partidos_jugados, 
-ROUND (AVG (60 + MOD (p.id_partido * 13, 35)), 2) ocupacion_pct
+SELECT e.nombre AS estadio, e.ciudad, e.capacidad,
+COUNT(p.id_partido) AS partidos_jugados,
+ROUND(AVG(ap.asistencia_real / e.capacidad * 100), 2) AS ocupacion_pct
 FROM MORENOLUIS.FIFA_ESTADIO e
-JOIN MORENOLUIS.FIFA_PARTIDO p on e.id_estadio = p.id_estadio
+JOIN MORENOLUIS.FIFA_PARTIDO p ON e.id_estadio = p.id_estadio
+JOIN ASISTENCIA_PARTIDO ap ON ap.id_partido = p.id_partido
 GROUP BY e.nombre, e.ciudad, e.capacidad
 ORDER BY ocupacion_pct DESC;
 
