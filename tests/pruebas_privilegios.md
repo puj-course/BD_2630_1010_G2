@@ -7,11 +7,11 @@ Caso 1 — Consulta autorizada (rol de solo lectura)
 Usuario: is101010, Pablo (rol ROL_CONSULTA_FIFA_G2)
 
 Operación ejecutada:
-SELECT * FROM PARTIDO;
+SELECT * FROM IS101004.partido;
 
 Resultado esperado: éxito, devuelve las filas de PARTIDO.
 
-Resultado obtenido: (pegar aquí la salida real)
+Resultado obtenido: las 109 filas
 
 Caso 2 — Escritura NO autorizada con el rol de consulta
 
@@ -21,42 +21,35 @@ Operación ejecutada:
 INSERT INTO PARTIDO (id_partido, id_edicion, id_estadio, fecha_hora, fase)
 VALUES (9999, 1, 1, SYSTIMESTAMP, 'Fase de Grupos');
 
-Resultado esperado: falla con ORA-01031, privilegios insuficientes, ya que el rol de consulta no tiene otorgado el privilegio INSERT.
-
-Resultado obtenido: (pegar aquí la salida real)
+Resultado obtenido: ORA-00001: restricción única (IS101010.SYS_C00925812) violada
 
 Caso 3 — Escritura autorizada (rol operativo)
 
 Usuario: is101002, Julian (rol ROL_OPERATIVO_FIFA_G2)
 
 Operación ejecutada:
-INSERT INTO PARTIDO (id_partido, id_edicion, id_estadio, fecha_hora, fase)
+INSERT INTO IS101004.PARTIDO (id_partido, id_edicion, id_estadio, fecha_hora, fase)
 VALUES (9998, 1, 1, SYSTIMESTAMP, 'Fase de Grupos');
 
-Resultado esperado: éxito, ya que el rol operativo tiene otorgado el privilegio INSERT sobre PARTIDO.
-
-Resultado obtenido: (pegar aquí la salida real)
-
+Resultado obtenido: filas insertadaas
 Caso 4 — Escritura NO autorizada sobre tabla catálogo (rol operativo)
 
 Usuario: is101002, Julian (rol ROL_OPERATIVO_FIFA_G2)
 
 Operación ejecutada:
-INSERT INTO EDICION_MUNDIAL (id_edicion, anio, pais_sede, lema, fecha_inicio, fecha_fin)
+INSERT INTO IS101004.EDICION_MUNDIAL (id_edicion, anio, pais_sede, lema, fecha_inicio, fecha_fin)
 VALUES (99, 2099, 'Pais Prueba', 'Lema Prueba', DATE '2099-01-01', DATE '2099-02-01');
 
-Resultado esperado: falla con ORA-01031, ya que el rol operativo solo tiene otorgado el privilegio SELECT sobre EDICION_MUNDIAL, no INSERT, porque no administra ediciones.
-
-Resultado obtenido: (pegar aquí la salida real)
+Resultado obtenido: privilegios insuficientes
 
 Caso 5 — Privilegio revocado temporalmente (rol operativo)
 
-Contexto: este caso se ejecuta justo después de correr REVOKE UPDATE ON PARTIDO FROM ROL_OPERATIVO_FIFA_G2 (ver sql/roles/roles_privilegios.sql), antes de volver a otorgar el privilegio.
+manuel corre: REVOKE UPDATE ON PARTIDO FROM ROL_OPERATIVO_FIFA_G2;
 
 Usuario: is101002, Julian (rol ROL_OPERATIVO_FIFA_G2)
 
 Operación ejecutada:
-UPDATE PARTIDO SET fase = 'Semifinal' WHERE id_partido = 9998;
+UPDATE IS101004.PARTIDO SET fase = 'Semifinal' WHERE id_partido = 9998;
 
 Resultado esperado: falla con ORA-01031, ya que el privilegio UPDATE se revocó justo antes de esta prueba.
 
