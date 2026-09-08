@@ -1,18 +1,21 @@
 # Álgebra Relacional — Entrega 1
 
 Convenciones notacionales empleadas:
-
-
- σ -->Selección (filtrado de filas según una condición) |
- π -->Proyección (selección de columnas) |
- ⋈ -->Junta natural / theta-junta |
- ρ -->Renombre (de relación o de atributo) |
- γ -->Agrupamiento con funciones de agregación (extensión práctica del álgebra relacional clásica, empleada de forma estándar en los cursos de bases de datos para expresar `GROUP BY`) |
-| τ -->Ordenamiento (extensión práctica, equivalente a `ORDER BY`) |
+Para las expresiones de álgebra relacional se utiliza el modelo inicial del proyecto, compuesto por:
+EDICION_MUNDIAL(id_edicion, anio, pais_sede, lema, fecha_inicio, fecha_fin)
+ESTADIO(id_estadio, id_edicion, nombre, ciudad, capacidad)
+SELECCION(id_seleccion, id_edicion, pais, confederacion)
+PARTIDO(id_partido, id_edicion, id_estadio, fecha_hora, fase)
+PARTICIPACION_PARTIDO(id_participacion, id_partido, id_seleccion, condicion, goles_marcados)
+Los operadores utilizados son:
+σ: selección
+π: proyección
+⋈: junta
+ρ: renombramiento
+γ: agrupación y agregación
+−: diferencia
 
 Por brevedad notacional, se abrevian las relaciones del esquema de referencia `MORENOLUIS.FIFA_*` como `SELECCION`, `PARTICIPACION_PARTIDO`, `PARTIDO` y `ESTADIO`, y la tabla auxiliar propia como `ASISTENCIA`.
-
-
 
 ## Consulta 1 — Top 5 selecciones con más goles marcados en la edición modelada
 
