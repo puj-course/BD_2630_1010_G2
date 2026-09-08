@@ -10,8 +10,6 @@ GRANT SELECT ON PARTIDO TO ROL_CONSULTA_FIFA;
 GRANT SELECT ON PARTICIPACION_PARTIDO TO ROL_CONSULTA_FIFA;
 GRANT SELECT ON ASISTENCIA_PARTIDO    TO ROL_CONSULTA_FIFA;
 
-
-
 -- ---------------------------------------------------------------------
 -- Rol 2: ROL_OPERATIVO_FIFA - registra partidos y sus participaciones.
 -- ---------------------------------------------------------------------
@@ -31,7 +29,6 @@ GRANT SELECT, INSERT, UPDATE ON ASISTENCIA_PARTIDO    TO ROL_OPERATIVO_FIFA;
 GRANT ROL_CONSULTA_FIFA  TO REEMPLAZAR_USUARIO_CONSULTA;   -- ej: IS101002
 GRANT ROL_OPERATIVO_FIFA TO REEMPLAZAR_USUARIO_OPERATIVO;  -- ej: IS101003
 
-
 -- ---------------------------------------------------------------------
 -- Demostracion de REVOKE (exigido por el enunciado junto con GRANT):
 -- se revoca temporalmente el UPDATE del rol operativo, se verifica que
@@ -45,7 +42,6 @@ REVOKE UPDATE ON PARTIDO FROM ROL_OPERATIVO_FIFA;
 GRANT UPDATE ON PARTIDO TO ROL_OPERATIVO_FIFA;
 -- (se restaura el privilegio para que el ciclo de vida del partido siga
 --  funcionando con normalidad)
-
 
 -- ---------------------------------------------------------------------
 -- Verificacion rapida de lo otorgado (ejecutar como el dueno de las
