@@ -2,6 +2,7 @@
 -- ROLES Y PRIVILEGIOS - ENTREGA 1
 
 -- =====================================================
+
 -- 1. Creación de roles
 
 CREATE ROLE rol_consulta;
@@ -9,6 +10,7 @@ CREATE ROLE rol_consulta;
 CREATE ROLE rol_operativo;
 
 -- =====================================================
+
 -- 2. Rol de solo consulta
 
 GRANT SELECT
@@ -31,8 +33,8 @@ GRANT SELECT
 ON PARTICIPACION_PARTIDO
 TO rol_consulta;
 
-
 -- =====================================================
+
 -- 3. Rol operativo
 
 GRANT SELECT
@@ -67,6 +69,7 @@ ON PARTICIPACION_PARTIDO
 TO rol_operativo;
 
 -- =====================================================
+
 -- 4. Restriccion de privilegios
 -- El rol operativo no puede eliminar información
 
