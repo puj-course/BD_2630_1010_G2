@@ -1,6 +1,6 @@
 Documento Técnico — Entrega 1
 
-Este documento constituye un archivo vivo del proyecto que se actualiza semana a semana dentro del mismo archivo, sin generar documentos adicionales para las mismas secciones. La presente versión incorpora las cinco secciones correspondientes al cierre de la Entrega 1: descripción del problema y alcance (Sección 1), supuestos de modelado (Sección 2), modelo entidad-relación (Sección 3), transformación a modelo lógico relacional (Sección 4) y diccionario de datos (Sección 5).
+Este documento constituye un archivo del proyecto que se actualiza semana a semana dentro del mismo archivo, sin generar documentos adicionales para las mismas secciones. La presente versión incorpora las cinco secciones correspondientes al cierre de la Entrega 1: descripción del problema y alcance (Sección 1), supuestos de modelado (Sección 2), modelo entidad-relación (Sección 3), transformación a modelo lógico relacional (Sección 4) y diccionario de datos (Sección 5).
 
 1. Descripción del problema y alcance del sistema
 

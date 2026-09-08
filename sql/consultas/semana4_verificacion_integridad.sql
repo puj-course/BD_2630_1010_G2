@@ -19,7 +19,7 @@ WITH posiciones_con_grupo AS (
         v.puntos,
         v.diferencia_gol
     FROM VW_TABLA_POSICIONES_PARCIAL v
-    JOIN SELECCION s
+    JOIN MORENOLUIS.FIFA_SELECCION s
         ON v.pais = s.pais AND v.id_edicion = s.id_edicion
 ),
 maximos AS (

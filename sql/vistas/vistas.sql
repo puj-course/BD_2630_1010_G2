@@ -69,10 +69,10 @@ SELECT
     p.fecha_hora,
     e.nombre AS estadio,
     e.ciudad,
-    MAX(CASE WHEN pp.condicion = 'LOCAL'     THEN s.pais END) AS seleccion_local,
-    MAX(CASE WHEN pp.condicion = 'LOCAL'     THEN pp.goles_marcados END) AS goles_local,
-    MAX(CASE WHEN pp.condicion = 'VISITANTE' THEN s.pais END) AS seleccion_visitante,
-    MAX(CASE WHEN pp.condicion = 'VISITANTE' THEN pp.goles_marcados END) AS goles_visitante
+    MAX(CASE WHEN pp.condicion = 'local'     THEN s.pais END) AS seleccion_local,
+    MAX(CASE WHEN pp.condicion = 'local'     THEN pp.goles_marcados END) AS goles_local,
+    MAX(CASE WHEN pp.condicion = 'visitante' THEN s.pais END) AS seleccion_visitante,
+    MAX(CASE WHEN pp.condicion = 'visitante' THEN pp.goles_marcados END) AS goles_visitante
 FROM MORENOLUIS.FIFA_PARTIDO p
 JOIN MORENOLUIS.FIFA_ESTADIO e
     ON e.id_estadio = p.id_estadio

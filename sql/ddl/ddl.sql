@@ -57,6 +57,7 @@ CREATE TABLE partido (
 );
 
 --5. Participación partido
+CREATE TABLE participacion_partido (
   id_participacion    NUMBER PRIMARY KEY,
   id_partido          NUMBER NOT NULL,
   id_seleccion        NUMBER NOT NULL,
@@ -73,18 +74,7 @@ CREATE TABLE partido (
   CONSTRAINT uq_participacion_partido_condicion UNIQUE (id_partido, condicion)
 );
 
---------------------------------------------------------------------
--- Tabla auxiliar ASISTENCIA_PARTIDO
--- MORENOLUIS.FIFA_ESTADIO / FIFA_PARTIDO no tienen ningun atributo de
--- asistencia y son de solo lectura, asi que esta tabla propia guarda la
--- asistencia estimada por partido para poder calcular el % de ocupacion
--- (Vista 3, Consulta 2, Consulta 8).
--- IMPORTANTE: id_partido AQUI se refiere a MORENOLUIS.FIFA_PARTIDO, no
--- a la tabla PARTIDO propia de arriba (esa es para el ciclo de vida en
--- sql/dml/dml_ciclo_vida_partido.sql, un conjunto de datos separado).
--- Por eso no lleva FOREIGN KEY: no se puede declarar una FK contra una
--- tabla de otro esquema que no controlamos.
---------------------------------------------------------------------
+-- Tabla auxiliar propia
 CREATE TABLE asistencia_partido (
   id_partido       NUMBER PRIMARY KEY,
   asistencia_real  NUMBER NOT NULL,

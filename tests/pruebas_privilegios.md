@@ -1,12 +1,10 @@
 Pruebas de Roles y Privilegios — Entrega 1
 
-Evidencia de que cada rol, ROL_CONSULTA_FIFA y ROL_OPERATIVO_FIFA, solo puede realizar las operaciones para las que fue autorizado en sql/roles/roles_privilegios.sql. Cada caso se ejecutó conectado con la cuenta Oracle del integrante al que se le otorgó el rol correspondiente, y no con la cuenta dueña de las tablas.
-
-Nota: se debe reemplazar USUARIO_CONSULTA y USUARIO_OPERATIVO por los usuarios Oracle reales usados, y pegar la salida real de cada prueba, o una captura, en el campo Resultado obtenido.
+Aquí se evidencia que cada rol, ROL_CONSULTA_FIFA_G2 y ROL_OPERATIVO_FIFA_G2, solo puede realizar las operaciones para las que fue autorizado. Cada caso se ejecutó conectado con la cuenta Oracle del integrante al que se le otorgó el rol correspondiente, y no con la cuenta dueña de las tablas.
 
 Caso 1 — Consulta autorizada (rol de solo lectura)
 
-Usuario: USUARIO_CONSULTA (rol ROL_CONSULTA_FIFA)
+Usuario: is101010, Pablo (rol ROL_CONSULTA_FIFA_G2)
 
 Operación ejecutada:
 SELECT * FROM PARTIDO;
@@ -17,7 +15,7 @@ Resultado obtenido: (pegar aquí la salida real)
 
 Caso 2 — Escritura NO autorizada con el rol de consulta
 
-Usuario: USUARIO_CONSULTA (rol ROL_CONSULTA_FIFA)
+Usuario: is101010, Pablo (rol ROL_CONSULTA_FIFA_G2)
 
 Operación ejecutada:
 INSERT INTO PARTIDO (id_partido, id_edicion, id_estadio, fecha_hora, fase)
@@ -29,7 +27,7 @@ Resultado obtenido: (pegar aquí la salida real)
 
 Caso 3 — Escritura autorizada (rol operativo)
 
-Usuario: USUARIO_OPERATIVO (rol ROL_OPERATIVO_FIFA)
+Usuario: is101002, Julian (rol ROL_OPERATIVO_FIFA_G2)
 
 Operación ejecutada:
 INSERT INTO PARTIDO (id_partido, id_edicion, id_estadio, fecha_hora, fase)
@@ -41,7 +39,7 @@ Resultado obtenido: (pegar aquí la salida real)
 
 Caso 4 — Escritura NO autorizada sobre tabla catálogo (rol operativo)
 
-Usuario: USUARIO_OPERATIVO (rol ROL_OPERATIVO_FIFA)
+Usuario: is101002, Julian (rol ROL_OPERATIVO_FIFA_G2)
 
 Operación ejecutada:
 INSERT INTO EDICION_MUNDIAL (id_edicion, anio, pais_sede, lema, fecha_inicio, fecha_fin)
@@ -53,9 +51,9 @@ Resultado obtenido: (pegar aquí la salida real)
 
 Caso 5 — Privilegio revocado temporalmente (rol operativo)
 
-Contexto: este caso se ejecuta justo después de correr REVOKE UPDATE ON PARTIDO FROM ROL_OPERATIVO_FIFA (ver sql/roles/roles_privilegios.sql), antes de volver a otorgar el privilegio.
+Contexto: este caso se ejecuta justo después de correr REVOKE UPDATE ON PARTIDO FROM ROL_OPERATIVO_FIFA_G2 (ver sql/roles/roles_privilegios.sql), antes de volver a otorgar el privilegio.
 
-Usuario: USUARIO_OPERATIVO (rol ROL_OPERATIVO_FIFA)
+Usuario: is101002, Julian (rol ROL_OPERATIVO_FIFA_G2)
 
 Operación ejecutada:
 UPDATE PARTIDO SET fase = 'Semifinal' WHERE id_partido = 9998;
@@ -64,13 +62,13 @@ Resultado esperado: falla con ORA-01031, ya que el privilegio UPDATE se revocó 
 
 Resultado obtenido: (pegar aquí la salida real)
 
-Verificación posterior: tras volver a ejecutar GRANT UPDATE ON PARTIDO TO ROL_OPERATIVO_FIFA, se repite la misma sentencia UPDATE y se confirma que esta vez sí se ejecuta con éxito.
+Verificación posterior: tras volver a ejecutar GRANT UPDATE ON PARTIDO TO ROL_OPERATIVO_FIFA_G2, se repite la misma sentencia UPDATE y se confirma que esta vez sí se ejecuta con éxito.
 
 Resultado obtenido: (pegar aquí la salida real)
 
 Caso 6 — Operación no otorgada a ningún rol (DELETE)
 
-Usuario: USUARIO_OPERATIVO (rol ROL_OPERATIVO_FIFA)
+Usuario: is101002, Julian (rol ROL_OPERATIVO_FIFA_G2)
 
 Operación ejecutada:
 DELETE FROM PARTICIPACION_PARTIDO WHERE id_partido = 9998;
@@ -94,5 +92,3 @@ Caso 5, UPDATE sobre PARTIDO con el rol operativo sin el privilegio vigente, res
 Caso 6, DELETE sobre PARTICIPACION_PARTIDO con el rol operativo, resultado esperado ORA-01031, coincide: (completar tras ejecutar en el servidor).
 
 Al finalizar las pruebas, se deben limpiar los datos de prueba correspondientes a id_partido 9998 y 9999, mediante DELETE o ROLLBACK ejecutado desde la cuenta dueña de las tablas.
-
-Con esto, pruebas_dml.md y pruebas_privilegios.md quedan en el mismo formato de texto plano. Falta que ustedes obtengan los usuarios Oracle reales de tus compañeros para reemplazar USUARIO_CONSULTA/USUARIO_OPERATIVO y correr estas pruebas.
