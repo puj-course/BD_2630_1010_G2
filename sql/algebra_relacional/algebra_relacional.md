@@ -1,7 +1,5 @@
 # Álgebra Relacional — Entrega 1
 
-El presente documento traduce a notación de álgebra relacional cuatro de las quince consultas SQL solicitadas en la Sección 9.1.9 del enunciado, como ejercicio conceptual previo a su implementación en SQL, conforme a lo indicado en la Sección 8.1.7.
-
 Convenciones notacionales empleadas:
 
 
