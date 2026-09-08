@@ -90,5 +90,3 @@ SELECCION,
 PARTIDO,
 PARTICIPACION_PARTIDO
 FROM rol_consulta;
-
--- =====================================================
