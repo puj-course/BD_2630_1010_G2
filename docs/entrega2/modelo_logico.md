@@ -134,4 +134,89 @@ Notación: la llave primaria se indica siempre en **negrita** y las llaves forá
 - Tabla asociativa que se encarga de resolver la la relación N:M (muchos a muchos) entre SELECCION y PARTIDO.
 - Es única por (id_partido, id_seleccion) y también por (id_partido, condicion): ya que solo puede haber como máximo un local y un visitante por partido. 
 
+### 4.2 Organización del torneo 
 
+**CIUDAD** (**id_ciudad**, id_edicion → EDICION_MUNDIAL, nombre, pais)
+- Represemnta una ciudad sede dentro de una edición concreta del Mundial.
+- `pais` se encarga de guardar el país anfitrión al que pertenece la ciudad; así una misma edición puede tener varios países sede (2026 con Canadá, Estados Unidos y México) sin romper la 1FN.
+- Es única por (id_edicion, nombre, pais): una ciudad no puede registrarse dos veces como sede la misma edición.
+
+### 4.3 Competencia deportiva
+
+**FASE** (**id_fase**, id_edicion → EDICION_MUNDIAL, nombre, orden, num_clasificados)
+- Representa cada etapa del Mundial en una misma edición: fase de grupos, dieciseisavos, octavos, cuartos, semifinal, tercer puesto y final.
+- `orden` se encarga de indicar en que posición se juega la fase dentro del propio torneo y `num_clasificados` indica cuantas selecciones lograron pasar a la siguiente ronda.
+- A traves de FASE se obtiene la edición de cada partido, por esto mismo, PARTIDO ya no se encarga de guardar `id_edicion`.
+- Es única por (id_edicion, nombre) y también por (orden, id_edicion): no puede haber dos fases con el mismo nombre ni la misma posición en la que se juega.
+
+**GRUPO** (**id_grupo**, id_fase → FASE, nombre)
+- Representa los grupos (A, B, C...) de la fase de grupos de una edición.
+- Es único por (id_fase, nombre): no puede haber dos "Grupo A" en la misma fase.
+- `id_fase` debe apuntar siempre a la fase de grupos de su edición; esta regla se valida con un trigger de consistencia en la Entrega 3.
+
+### 4.4 Selecciones, jugadores y cuerpo técnico
+
+**CONFEDERACION** (**id_confederacion**, sigla, nombre)
+- Cátalogo que contiene las seis confederaciones de la FIFA (AFC, CAF, CONMEBOL, UEFA, OFC Y CONCACAF).
+- `sigla` es única: así se logra evitar valores inconsistentes como "UEFA", "Europa" o "Uefa"
+
+**FEDERACION** (**id_federacion**, id_confederacion → CONFEDERACION, pais, codigo_fifa)
+- Representa la federación de fútbol de un país, que existe independientemente a la edición del Mundial que se esta jugando.
+- `pais` y `codigo_fifa` son únicos (por ejemplo ARG, ESP o COL).
+
+**JUGADOR** (**id_jugador**, nombres, apellidos, fecha_nacimiento, posicion)
+- Guarda los datos personales del jugador (en este modelo son ficticios), que no cambiarán con el paso de las ediciones.
+- `posicion` queda restringido a portero, defensa, mediocampista o delantero.
+- No se encarga de guardar la selección: un jugador puede jugar muchos Mundiales y su pertenencia a una selección queda registrada en CONVOCATORIA_JUGADOR.
+
+**CONVOCATORIA_JUGADOR** (**id_convocatoria**, id_seleccion → SELECCION, id_jugador → JUGADOR, dorsal, es_capitan)
+- Tabla asociativa que da solución la relación N:M entre JUGADOR y SELECCION: representa la nómina oficial de cada selección en una edición de un Mundial.
+- `es_capitan` tomará los valores de S o N (Sí o no).
+- Es única por (id_jugador, id_seleccion): un jugador no puede quedar convocado dos veces a la misma selección. También es única por el lado de (id_seleccion, dorsal) ya que dos jugadores de una misma selección no pueden llevar el mismo dorsal.
+- Las reglas (no superar el `cupo_convocatoria` de la edición, un jugador que no este en dos selecciones en una misma edición, solo un capitán por equipo).
+
+**CUERPO_TECNICO** (**id_miembro**, id_seleccion → SELECCION, nombres, apellidos, nacionalidad, rol)
+- Se encarga de registrar el entrenador y demás miembros del cuerpo técnico de cada selección participante.
+- `rol` queda restringido a los valores de: entrenador principal, preparador físico, asistente técnico, médico y por último entrenador de porteros.
+- `nacionalidad` queda guardado porque hay varios casos en los que un entrenador no es de la misma nacionalidad de la selección a la que esta dirigiendo.
+
+### 4.5 Arbitraje 
+
+**ARBITRO** (**id_arbitro**, id_confederacion → CONFEDERACION, nombres, apellidos, nacionalidad, fecha_nacimiento)
+- Guarda los datos (para este modelo serán ficticios) de los arbitros que hayan sido designados por la FIFA.
+- `id_confederacion` indica la confederación a la que pertenece el árbitro, para asi poder verificar que el arbitro no pertenezca a la misma confederación de las selecciones que se enfrenten en el partido que arbitre.
+
+**ASIGNACION_ARBITRAL** (**id_asignacion**, id_partido → PARTIDO, id_arbitro → ARBITRO, rol)
+- Tabla asociativa encargada de dar solución a la relación N:M entre ARBITRO y PARTIDO.
+- `rol` se restringe a: principal, asistente 1, asistente 2, cuarto árbitro, AVAR (Asistente del VAR) y VAR.
+- Es única por (id_arbitro, id_partido) ya que un arbitro no puede cumplir dos roles diferentes en un mismo partido. También es única por la parte de (id_partido, rol) debido a que cada rol queda asignado a un solo árbitro por partido.
+
+### 4.6 Estadísticas de juego
+
+**ESTADISTICA_JUGADOR_PARTIDO** (**id_estadistica**, id_partido → PARTIDO, id_convocatoria → CONVOCATORIA_JUGADOR, minuto_entrada, minuto_salida, goles, asistencias, tarjetas_amarillas, tarjeta_roja)
+- Registra el desempeño de un jugador en un partido en concreto.
+- Referencia a CONVOCATORIA_JUGADOR y no dircectamente a JUGADOR: así se puede conocer con que dorsal y con que selección jugó, sin repetir datos.
+- Es única por el lado de (id_partido, id_convocatoria): un jugador tiene una sola fila de estadísticas por partido jugado.
+- Cuenta con restricciones CHECK: `goles`, `asistencias` y `tarjetas_amarillas` tiene que ser mayores o iguales a cero; `tarjetas_amarillas` como máximo dos por jugador en cada partido; `tarjeta_roja` toma valores de S o N (sí o no); `minuto_salida` mayor o igual a `minuto_entrada`.
+- La suma de goles marcados por los jugadores en un partido coincida con `goles_marcados` de PARTICIPACION_PARTIDO, y que el jugador pertenezca a una de las selecciones de ese partido.
+
+### 4.7 Logística, público, medios e incidencias
+
+**ENTRADA** (**id_entrada**, id_partido → PARTIDO, categoria, precio, cantidad_vendida)
+- Se encarga de registrar la boletería vendida por partido, agrupada por categorías (categoría 1, 2, 3 y hospitalidad).
+- Es única por el lado de (id_partido, categoria): cada categoría solo aparece una vez por partido.
+- `precio` y `cantidad_vendida` deben ser estrictamente mayores o iguales a 0. Que el total vendido no sobrepase la `capacidad` del estadio.
+
+**ACREDITACION_PRENSA** (**id_acreditacion**, id_edicion → EDICION_MUNDIAL, codigo_acreditacion, nombre_periodista, medio, tipo_medio, pais_medio)
+- Se encarga de registrar a los periodistas y medios acreditados para cubrir una edición.
+- `codigo_acreditacion` es único: es el número de la credencial que se le es entregado a cada uno de los periodistas.
+- `tipo_medio` se restringe a prensa escrita, radio, televisión y digital.
+
+**INCIDENCIA** (**id_incidencia**, id_partido → PARTIDO, tipo, minuto, gravedad, descripcion)
+- Registra los eventos irregulares ocurridos durante un partido: lesiones, interrupciones, problemas de seguridad, fallas técnicas, entre otros.
+- `tipo` y `gravedad` (baja, media o alta) se restringen mediante CHECK; `minuto` debe ser mayor o igual a 0.
+
+**AUDITORIA_EVENTO** (**id_auditoria**, tabla_afectada, operacion, id_registro, usuario, fecha_hora, valor_anterior, valor_nuevo)
+- Guarda quién cambió qué información crítica y cuándo (por ejemplo, la corrección del marcador de un partido).
+- `operacion` se restringe a INSERT, UPDATE y DELETE.
+- No tiene llaves foráneas a propósito: debe registrar cambios de cualquier tabla y conservar el registro aunque la fila original se elimine.
