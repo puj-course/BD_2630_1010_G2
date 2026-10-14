@@ -105,13 +105,13 @@ frentes funcionales de la Sección 7 del enunciado. Las marcadas con
 
 ### 3.3 Ajustes frente a la Evaluación Crítica
 
-- **GOL se reemplaza por ESTADISTICA_JUGADOR_PARTIDO.** En lugar de resgistrar solo los goles, esta tabla hace seguimiento de todo el desempeño del jugador en todo el partido (goles, minutos, tarjetas y asistencias), tal y como indica la regla 7.5.
-- **SELECCION_GRUPO no se crea.** Cada file de SELECCION representa una seleeción de una edición del mundial en concreto, y en una edición cada selección pertenece a un único grupo. La relación es de 1 a N y se le da solución mediante la llave foránea `id_grupo` en SELECCION.
-- **Se agregan nuevas entidades no previstas en la propia evaluación.** FEDERACION, CONVOCATORIA_JUGADOR, CUERPO_TECNICO,CIUDAD, ENTRADA, ARBITRO, ASIGNACION_ARBITRAL, INCIDENCIA Y ACREDITACION_PRENSA, para poder cumplir así con todas las reglas de negocio exigidas en la sección 7.
+- **GOL se reemplaza por ESTADISTICA_JUGADOR_PARTIDO.** En lugar de registrar solo los goles, esta tabla hace seguimiento de todo el desempeño del jugador en todo el partido (goles, minutos, tarjetas y asistencias), tal y como indica la regla 7.5.
+- **SELECCION_GRUPO no se crea.** Cada fila de SELECCION representa una selección de una edición del mundial en concreto, y en una edición cada selección pertenece a un único grupo. La relación es de 1 a N y se le da solución mediante la llave foránea `id_grupo` en SELECCION.
+- **Se agregan nuevas entidades no previstas en la propia evaluación.** FEDERACION, CONVOCATORIA_JUGADOR, CUERPO_TECNICO, CIUDAD, ENTRADA, ARBITRO, ASIGNACION_ARBITRAL, INCIDENCIA Y ACREDITACION_PRENSA, para poder cumplir así con todas las reglas de negocio exigidas en la sección 7.
 
 ## 4. Esquema de cada tabla
 
-Notación: la llave primaria se indica siempre en **negrita** y las llaves foráneas siempre con → seguidas de la tabla a la que es referenciada. Todas llave primaria son identificadores númericos, que nunca cambian con el tiempo. Las llaves naturales del negocio quedarán protegidos mediantes restricciones de tipo UNIQUE.
+Notación: la llave primaria se indica siempre en **negrita** y las llaves foráneas siempre con → seguidas de la tabla a la que es referenciada. Todas las llaves primarias son identificadores númericos, que nunca cambian con el tiempo. Las llaves naturales del negocio quedarán protegidas mediantes restricciones de tipo UNIQUE.
 
 ### 4.1 Tablas del Modelo Inicial   
 **ESTADIO** (**id_estadio**, id_ciudad → CIUDAD, nombre, capacidad)
@@ -123,7 +123,7 @@ Notación: la llave primaria se indica siempre en **negrita** y las llaves forá
 - `anio` siempre es único: debido a que no puede haber dos mundiales en un mismo año.
 
 **PARTIDO** (**id_partido**, id_fase → FASE, id_estadio → ESTADIO, id_grupo → GRUPO, codigo_llave, fecha_hora, estado, asistencia, definido_por_penales, tiempo_extra)
-- `id_grupo` solo se llena de manera exclusiva durante la fase de grupos y `codigo_llave` exclusivamente en fase eliiminatoria.
+- `id_grupo` solo se llena de manera exclusiva durante la fase de grupos y `codigo_llave` exclusivamente en fase eliminatoria.
 - es único por (id_estadio, fecha_hora): un estadio no puede albergar dos partidos en una misma hora.
 
 **SELECCION** (**id_seleccion**,id_edicion → EDICION_MUNDIAL, id_federacion → FEDERACION, id_grupo → GRUPO, ranking_fifa)
@@ -137,7 +137,7 @@ Notación: la llave primaria se indica siempre en **negrita** y las llaves forá
 ### 4.2 Organización del torneo 
 
 **CIUDAD** (**id_ciudad**, id_edicion → EDICION_MUNDIAL, nombre, pais)
-- Represemnta una ciudad sede dentro de una edición concreta del Mundial.
+- Representa una ciudad sede dentro de una edición concreta del Mundial.
 - `pais` se encarga de guardar el país anfitrión al que pertenece la ciudad; así una misma edición puede tener varios países sede (2026 con Canadá, Estados Unidos y México) sin romper la 1FN.
 - Es única por (id_edicion, nombre, pais): una ciudad no puede registrarse dos veces como sede la misma edición.
 
@@ -255,7 +255,7 @@ Notación: la llave primaria se indica siempre en **negrita** y las llaves forá
 - EDICION_MUNDIAL --> ACREDITACION_PRENSA: Tipo 1:N, en un mundial muchos periodistas son acreditados.
 - PARTIDO --> ENTRADA: Tipo 1:N, un partido vende entradas de distintos tipos.
 
-## 6. Reglas que no solo se resuelven con la estructura
+## 6. Reglas que no se resuelven con la estructura
 
 1. Cada partido debe contar exactamente con dos participaciones: una como local y otra como visitante.
 2. Un partido no puede terminar en empate (`resultado` = E), si el Mundial ya se encuentra en las fases eliminatorias.
