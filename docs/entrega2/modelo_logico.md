@@ -255,3 +255,17 @@ Notación: la llave primaria se indica siempre en **negrita** y las llaves forá
 - EDICION_MUNDIAL --> ACREDITACION_PRENSA: Tipo 1:N, en un mundial muchos periodistas son acreditados.
 - PARTIDO --> ENTRADA: Tipo 1:N, un partido vende entradas de distintos tipos.
 
+## 6. Reglas que no solo se resuelven con la estructura
+
+1. Cada partido debe contar exactamente con dos participaciones: una como local y otra como visitante.
+2. Un partido no puede terminar en empate (`resultado` = E), si el Mundial ya se encuentra en las fases eliminatorias.
+3. `id_grupo` solo puede contar con valor si el partido es de fase de grupos y lo mismo para `codigo_llave` si nos encontramos en fases eliminatorias. El grupo del partido debe ser igual para ambas selecciones que se encuentren jugando ese partido.
+4. Un jugador no puede ser convocado por dos selecciones en una misma edición del Mundial.
+5. La convocatoria de jugadores de una selección no puede superar el `cupo_convocatoria` establecido en esa edición, y solo debe tener un capitán.
+6. La suma de los goles proveniente de ESTADISTICA_JUGADOR_PARTIDO debe conicidir con la de `goles_marcados` de PARTICIPACION_PARTIDO.
+7. Todo cambio sobre el marcador de un partido o el estado de este mismo quedará registrado en AUDITORIA_EVENTO.
+8. La suma proveniente de `cantidad_vendida` en ENTRADA y la `asistencia` del partido no pueden sobrepasar la `capacidad` del estadio en el que se esta jugando.
+
+## 7. Diagrama 
+
+El diagrama del modelo lógico ampliado, con las 20 tablas y sus relaciones, se encuentra en `modelo_logico.png`. El detalle de cada atributo (tipo de dato, nulabilidad y restricciones) se encuentra en `diccionario_datos_ampliado.md`.
