@@ -220,3 +220,38 @@ Notación: la llave primaria se indica siempre en **negrita** y las llaves forá
 - Guarda quién cambió qué información crítica y cuándo (por ejemplo, la corrección del marcador de un partido).
 - `operacion` se restringe a INSERT, UPDATE y DELETE.
 - No tiene llaves foráneas a propósito: debe registrar cambios de cualquier tabla y conservar el registro aunque la fila original se elimine.
+
+## 5. Relaciones y cardinalidades
+
+## 5.1 Organización torneo
+- EDICION_MUNDIAL --> CIUDAD: Tipo 1:N, ya que un mundial tiene muchas ciudades que son sede.
+- CIUDAD --> ESTADIO: Tipo 1:N, una ciudad puede tener varios estadios.
+- ESTADIO --> PARTIDO: Tipo 1:N, en un estadio se jugean una gran cantidad de partidos.
+
+## 5.2 Competencia deportiva 
+- EDICION_MUNDIAL --> FASE: Tipo 1:N, cada edición del mundial tiene varias fases.
+- FASE --> GRUPO: Tipo 1:N, en la fase de grupos hay distintos grupos con sus respectivas selecciones.
+- GRUPO --> PARTIDO: Tipo 1:N, cada grupo cuenta con varios partidos diferentes.
+- Partido <--> SELECCION: Tipo N:M, en cada partido juegan 2 selecciones y además cada selección juega varios partidos. Tabla intermedia: PARTICIPACION_PARTIDO.
+- FASE --> PARTIDO: Tipo 1:N, en cada fase del Mundial se juegan varios partidos.
+
+## 5.3 Selecciones, jugadores y cuerpo técnico 
+- CONFEDERACION --> FEDERACION: Tipo 1:N, una confederación contiene varias federaciones.
+- EDICION_MUNDIAL --> SELECCION: Tipo 1:N, en un mundial hay muchas selecciones.
+- FEDERACION --> SELECCION: Tipo 1:N, una federación tiene una selección por cada mundial en el que haya participado en su historia.
+- SELECCION <--> JUGADOR: Tipo N:m, una selección cuenta con muchos jugadores convocados y un jugador puede ser convocado a una selección en varios mundiales. Tabla intermedia: CONVOCATORIA_JUGADOR.
+- GRUPO --> SELECCION: Tipo 1:N, un grupo tiene muchas selecciones.
+- SELECCION --> CUERPO_TECNICO: Tipo 1:N, cada selección tiene varios miembros del equipo técnico.
+
+## 5.4 Arbitraje
+- PARTIDO <--> ARBITRO: Tipo N:M, Un partido cuenta con varios arbitros y un mismo árbitro puede pitar varios partidos. Tabla intermedia: ASIGNACION_ARBITRAL.
+- CONFEDERACION --> ARBITRO: Tipo 1:N, una confederación cuenta con varios arbitros designados.
+
+## 5.5 Estadísticas de juego
+- PARTIDO <--> CONVOCATORIA_JUGADOR: Tipo N:M, en cada partido jugean muchos jugadores y un jugador también juega varios partidos. Tabla intermedia: ESTADISTICA_JUGADOR_PARTIDO.
+
+## 5.6 Logística, público, medios e incidencias
+- PARTIDO --> INCIDENCIA: Tipo 1:N, en un partido pueden ocurrir muchas incidencias.
+- EDICION_MUNDIAL --> ACREDITACION_PRENSA: Tipo 1:N, en un mundial muchos periodistas son acreditados.
+- PARTIDO --> ENTRADA: Tipo 1:N, un partido vende entradas de distintos tipos.
+
