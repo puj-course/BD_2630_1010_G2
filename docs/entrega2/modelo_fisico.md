@@ -104,3 +104,39 @@ Oracle no soporta ON UPDATE. Sin embargo, no es necesario, ya que todas las llav
 ### 4.4 Tabla sin llaves foráneas
 
 **AUDITORIA_EVENTO** no tiene llaves foráneas a propósito: debe poder registrar cambios de cualquier tabla y conservar el registro aunque la fila original haya sido eliminada.
+
+## 5. Índices 
+
+### 5.1 Índices automáticos
+Oracle se encarga de crear un índice automáticamente por cada **primary key** y también por cada restricción **unique**. Por este motivo no creamos índices manualmente para estos casos.
+Algunos ejemplos:
+
+- Buscar selecciones de una edición: queda cubierto por 'uq_seleccion_edicion_federacion' (empieza por 'id_edicion').
+- Buscar un partido según su estadio y según su fecha: queda cubierto por 'uq_partido_estadio_fechahora'.
+
+### 5.2 Índices creados de manera manual
+En caso de hablar de llaves foráneas Oracle no crea índices automáticos sobre ellas. Por eso creamos índices de manualmente sobre columnas que usamos con mayor frecuencia en JOIN o con filtros WHERE que no quedaron cubiertos por la índices automáticos.
+
+- **idx_partido_grupo:** PARTIDO ('id_grupo'), encargado de calcular la tabla de posiciones por grupo.
+- **idx_partido_fase:** PARTIDO ('id_fase'), encargado de listar los partidos de cada fase y ejecutar todo el procedimiento de cierre de fase.
+- **idx_partido_fecha:** PARIDO ('fecha_hora'), permite poder consultar el calendario de los partidos según la fecha.
+- **idx_seleccion_grupo:** SELECCION ('id_grupo'), encargado de listar las selecciones de cada grupo.
+- **idx_seleccion_federacion:** SELECCION ('id_federacion'), permite poder consultar el historial a lo largo de la historia de los Mundiales de una selección.
+- **idx_participacion_seleccion:** PARTICIPACION_PARTIDO ('id_seleccion'), permite calcular el rendimiento general de una selección (partidos jugados, goles, goles en contra...).
+- **idx_estadistica_convocatoria:** ESTADISTICA_JUGADOR_PARTIDO ('id_convocatoria'), se encarga de calcular las estadísticas de cada jugador y mediante eso el ranking de goleadores.
+- **idx_convocatoria_jugador:** CONVOCATORIA_JUGADOR ('id_jugador'), poder chequear el historial de un jugador y validar que no haya sido convocado por dos selecciones distintas en una misma edición del Mundial.
+- **idx_incidencia_partido:** INCIDENCIA('id_partido'), sirve para generar el reporte de incidencias por cada partido.
+- **idx_auditoria_tabla_fecha:** AUDITORIA_EVENTO ('tabla_afectada', 'fecha_hora'): permitirle al rol de Auditor consultar los cambios realizados sobre cualquier tabla durante un rango de fechas. 
+- **idx_asignacion_arbitros:** ASIGNACION_ARBITRAL ('id_arbitro'): consultar los partidos que dirigió cada árbitro.
+
+### 5.3 índices que no crearon
+Todas las columnas no quedan indexadas debido a que cada índice ocupa un espacio en el disco y puede hacer más lentas las operaciones UPDATE, INSERT Y DELETE. Además de que con cada cambio de datos Oracle necesita actualizar los índices.
+
+- Todas aquellas tablas pequeñas del proyecto (FASE, GRUPO, CONFEDERACIÓN), ya que sus consultas son sumamente rápidas incluso sin índices.
+- Las columnas que casi nunca se utilizarán como filtro, como 'lema', 'nombres' o 'descripcion'.
+
+## 6. Diagrama físico
+El diagrama físico queda ubicado en 'modelo_físico.png'. Fue creado con Oracle Data Modeler a partir de las tablas previamente creadas  en las base de datos, mostrando todas sus tablas, con sus llaves primarias, fóraneas, tipos de datos, restricciones, índices y relaciones entre ellas. 
+
+
+
