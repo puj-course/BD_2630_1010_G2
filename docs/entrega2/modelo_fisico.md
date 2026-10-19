@@ -62,8 +62,8 @@ Oracle no soporta ON UPDATE. Sin embargo, no es necesario, ya que todas las llav
 
 ### 4.2 Llaves foráneas con comportamiento restrictivo
 **Organización del torneo**
-- 'fk_ciudad_edicion' (CIUDAD → EDICION_MUNDIAL): no se borra una edición que tiene ciudades sede.
-- 'fk_estadio_ciudad' (ESTADIO → CIUDAD): no se borra una ciudad que tiene estadios.
+- 'fk_ciudad_sede_edicion' (CIUDAD_SEDE → EDICION_MUNDIAL): no se borra una edición que tiene ciudades sede.
+- 'fk_estadio_ciudad' (ESTADIO → CIUDAD_SEDE): no se borra una ciudad que tiene estadios.
 
 **Competencia deportiva**
 - 'fk_fase_edicion' (FASE → EDICION_MUNDIAL): las fases forman parte de la estructura del torneo.
