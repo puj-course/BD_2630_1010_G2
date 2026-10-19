@@ -14,7 +14,7 @@ JOIN federacion f ON s.id_federacion = f.id_federacion
 GROUP BY g.nombre, f.pais
 ORDER BY g.nombre, puntos DESC;
 
-Goleadores del torneo
+--Goleadores del torneo
 SELECT j.nombres, j.apellidos, f.pais AS seleccion,
 SUM(e.goles) AS total_goles
 FROM estadistica_jugador_partido e
