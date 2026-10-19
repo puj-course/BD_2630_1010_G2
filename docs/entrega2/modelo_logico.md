@@ -27,7 +27,7 @@ frentes funcionales de la Sección 7 del enunciado. Las marcadas con
 ### 2.1 Organización del torneo (Sección 7.1)
 
 1. **EDICION_MUNDIAL** (*): cada versión del Mundial.
-2. **CIUDAD**: ciudades sede de una edición, con su país anfitrión.
+2. ***CIUDAD_SEDE**: ciudades sede de una edición, con su país anfitrión.
 3. **ESTADIO** (*): estadios ubicados en cada ciudad sede.
 
 ### 2.2 Competencia deportiva (Sección 7.2)
@@ -78,11 +78,11 @@ frentes funcionales de la Sección 7 del enunciado. Las marcadas con
 ### 3.1 Cambios en las tablas del modelo inicial
 
 **EDICION MUNDIAL**
-- Se elimina completamente el atributo `pais_sede`. Una edición puede tener varios países sede como es el caso de la edición 2026 (Canadá, México y Estados Unidos), lo cual no cabe en un único campo de texto (rompiendo la 1FN). Los países sede ahora quedarán registrados en la tabla CIUDAD.
+- Se elimina completamente el atributo `pais_sede`. Una edición puede tener varios países sede como es el caso de la edición 2026 (Canadá, México y Estados Unidos), lo cual no cabe en un único campo de texto (rompiendo la 1FN). Los países sede ahora quedarán registrados en la tabla CIUDAD_SEDE.
 - Se añaden `num_selecciones`, `nombre_oficial` y `cupo_convocatoria`. El último nos permite saber el número máximo de jugadores por convocatoria, ya que esto va cambiando por edición del mundial.
 
 **ESTADIO**
-- El atributo ciudad queda reemplazado por id `id_ciudad`, que es llave foránea hacia CIUDAD.
+- El atributo ciudad queda reemplazado por id `id_ciudad`, que es llave foránea hacia CIUDAD_SEDE..
 - Queda eliminado `id_edicion`: la edición del estadio se obtendrá a través de su ciudad. Guardarla en ambos lugares acabaría creando una dependencia transitiva (rompiendo la 3FN).
 
 **PARTIDO**
@@ -107,14 +107,14 @@ frentes funcionales de la Sección 7 del enunciado. Las marcadas con
 
 - **GOL se reemplaza por ESTADISTICA_JUGADOR_PARTIDO.** En lugar de registrar solo los goles, esta tabla hace seguimiento de todo el desempeño del jugador en todo el partido (goles, minutos, tarjetas y asistencias), tal y como indica la regla 7.5.
 - **SELECCION_GRUPO no se crea.** Cada fila de SELECCION representa una selección de una edición del mundial en concreto, y en una edición cada selección pertenece a un único grupo. La relación es de 1 a N y se le da solución mediante la llave foránea `id_grupo` en SELECCION.
-- **Se agregan nuevas entidades no previstas en la propia evaluación.** FEDERACION, CONVOCATORIA_JUGADOR, CUERPO_TECNICO, CIUDAD, ENTRADA, ARBITRO, ASIGNACION_ARBITRAL, INCIDENCIA Y ACREDITACION_PRENSA, para poder cumplir así con todas las reglas de negocio exigidas en la sección 7.
+- **Se agregan nuevas entidades no previstas en la propia evaluación.** FEDERACION, CONVOCATORIA_JUGADOR, CUERPO_TECNICO, CIUDAD_SEDE, ENTRADA, ARBITRO, ASIGNACION_ARBITRAL, INCIDENCIA Y ACREDITACION_PRENSA, para poder cumplir así con todas las reglas de negocio exigidas en la sección 7.
 
 ## 4. Esquema de cada tabla
 
 Notación: la llave primaria se indica siempre en **negrita** y las llaves foráneas siempre con → seguidas de la tabla a la que es referenciada. Todas las llaves primarias son identificadores númericos, que nunca cambian con el tiempo. Las llaves naturales del negocio quedarán protegidas mediantes restricciones de tipo UNIQUE.
 
 ### 4.1 Tablas del Modelo Inicial   
-**ESTADIO** (**id_estadio**, id_ciudad → CIUDAD, nombre, capacidad)
+**ESTADIO** (**id_estadio**, id_ciudad → CIUDAD_SEDE, nombre, capacidad)
 - Es único por (id_ciudad, nombre).
 - Cada estadio pertenecerá a una ciudad sede.
 
@@ -136,7 +136,7 @@ Notación: la llave primaria se indica siempre en **negrita** y las llaves forá
 
 ### 4.2 Organización del torneo 
 
-**CIUDAD** (**id_ciudad**, id_edicion → EDICION_MUNDIAL, nombre, pais)
+**CIUDAD_SEDE** (**id_ciudad**, id_edicion → EDICION_MUNDIAL, nombre, pais)
 - Representa una ciudad sede dentro de una edición concreta del Mundial.
 - `pais` se encarga de guardar el país anfitrión al que pertenece la ciudad; así una misma edición puede tener varios países sede (2026 con Canadá, Estados Unidos y México) sin romper la 1FN.
 - Es única por (id_edicion, nombre, pais): una ciudad no puede registrarse dos veces como sede la misma edición.
@@ -224,8 +224,8 @@ Notación: la llave primaria se indica siempre en **negrita** y las llaves forá
 ## 5. Relaciones y cardinalidades
 
 ### 5.1 Organización torneo
-- EDICION_MUNDIAL --> CIUDAD: Tipo 1:N, ya que un mundial tiene muchas ciudades que son sede.
-- CIUDAD --> ESTADIO: Tipo 1:N, una ciudad puede tener varios estadios.
+- EDICION_MUNDIAL --> CIUDAD_SEDE: Tipo 1:N, ya que un mundial tiene muchas ciudades que son sede.
+- CIUDAD_SEDE --> ESTADIO: Tipo 1:N, una ciudad puede tener varios estadios.
 - ESTADIO --> PARTIDO: Tipo 1:N, en un estadio se juegan una gran cantidad de partidos.
 
 ### 5.2 Competencia deportiva 

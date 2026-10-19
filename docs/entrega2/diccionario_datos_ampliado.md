@@ -24,16 +24,16 @@ fecha_fin — DATE, no nulo. Restricción chk_edicion_fechas. Fecha de cierre de
 cupo_convocatoria — NUMBER(2), no nulo. Restricción chk_edicion_cupo (mayor que 0). Número máximo de jugadores por convocatoria.
 num_selecciones — NUMBER(3), no nulo. Restricción chk_edicion_num_selecciones (mayor que 0). Cantidad de selecciones participantes.
 
-- CIUDAD
-id_ciudad — NUMBER, no nulo, llave primaria (pk_ciudad). Identificador de la ciudad.
-id_edicion — NUMBER, no nulo, llave foránea hacia EDICION_MUNDIAL.id_edicion (fk_ciudad_edicion, comportamiento RESTRICT). Restricción uq_ciudad_edicion_nombre_pais: única en conjunto con nombre y pais. Edición en la que es sede.
+- CIUDAD_SEDE
+id_ciudad — NUMBER, no nulo, llave primaria (pk_ciudad_sede). Identificador de la ciudad.
+id_edicion — NUMBER, no nulo, llave foránea hacia EDICION_MUNDIAL.id_edicion (fk_ciudad_sede_edicion, comportamiento RESTRICT). Restricción uq_ciudad_sede_edicion_nombre_pais: única en conjunto con nombre y pais. Edición en la que es sede.
 nombre — VARCHAR2(100), no nulo. Nombre de la ciudad sede.
 pais — VARCHAR2(100), no nulo. País anfitrión al que pertenece la ciudad.
 
 - ESTADIO
 id_estadio — NUMBER, no nulo, llave primaria (pk_estadio). Identificador del estadio.
-id_ciudad — NUMBER, no nulo, llave foránea hacia CIUDAD.id_ciudad (fk_estadio_ciudad, comportamiento RESTRICT). Restricción uq_estadio_ciudad_nombre: única en conjunto con nombre. Ciudad en la que se ubica.
-nombre — VARCHAR2(150), no nulo. Nombre del estadio.
+id_ciudad — NUMBER, no nulo, llave foránea hacia CIUDAD_SEDE.id_ciudad (fk_estadio_ciudad, comportamiento RESTRICT). Restricción uq_estadio_ciudad_nombre: única en conjunto con nombre. Ciudad en la que se ubica.
+nombre — VARCHAR2(150), no nulo. Nombre del estadio.    
 capacidad — NUMBER, no nulo. Restricción chk_estadio_capacidad (mayor que 0 y menor o igual a 150000). Aforo máximo del estadio.
 
 - FASE
