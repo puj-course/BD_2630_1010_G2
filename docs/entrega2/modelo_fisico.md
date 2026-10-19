@@ -1,6 +1,6 @@
 # Modelo Físico
 
-## Introducción 
+## 1. Introducción 
 Este documento se encarga de describir detalladamente la implementación física del modelo lógico ampliado ('modelo_logico.md') utilizando el mismo motor que en la entrega 1. El módelo físico se encargará de definir como se crean los atributos y relaciones definidas en el modelo lógico realmente dentro del propio motor:
 
 - Los tipos de datos propios del motor (Oracle) que se ussarán en cada columna.
@@ -10,7 +10,7 @@ Este documento se encarga de describir detalladamente la implementación física
 
 El detalle de cada atributo (tipo, restricciones y nulabilidad) se encuentra dentro de 'diccionario_datos_ampliado.md'.
 
-## Tipos de datos a utilizar
+## 2. Tipos de datos a utilizar
 En este proyecto se utilizan los datos propios de Oracle DataBase 19c, eligiendo el tipo de dato que mejor se ajustaba según tipo y tamaño.
 
 - **NUMBER:** se utiliza tanto para llaves primarias como las foráneas, que son identificadores númericos sin significado dentro del negocio.
