@@ -1,6 +1,7 @@
 -- Carga de datos de prueba - Modelo ampliado (Entrega 2)
 -- Datos ficticios y coherentes entre si: los nombres de paises, ciudades y estadios son reales,
 -- pero jugadores, arbitros, periodistas y resultados son inventados.
+
 --Confederaciones
 INSERT INTO confederacion VALUES (1, 'AFC', 'Confederacion Asiatica de Futbol');
 INSERT INTO confederacion VALUES (2, 'CAF', 'Confederacion Africana de Futbol');
