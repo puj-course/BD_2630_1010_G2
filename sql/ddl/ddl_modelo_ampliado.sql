@@ -17,7 +17,7 @@ DROP TABLE seleccion PURGE;
 DROP TABLE grupo PURGE;
 DROP TABLE fase PURGE;
 DROP TABLE estadio PURGE;
-DROP TABLE ciudad PURGE;
+DROP TABLE ciudad_sede PURGE;
 DROP TABLE edicion_mundial PURGE;
 DROP TABLE federacion PURGE;
 DROP TABLE confederacion PURGE;
@@ -64,18 +64,17 @@ CREATE TABLE edicion_mundial (
     CONSTRAINT chk_edicion_num_selecciones CHECK (num_selecciones > 0)
 );
 
---Ciudad
-CREATE TABLE ciudad (
+--Ciudad sede
+CREATE TABLE ciudad_sede (
     id_ciudad number,
     id_edicion number NOT NULL,
     nombre varchar2(100) NOT NULL,
     pais varchar2(100) NOT NULL,
-    CONSTRAINT pk_ciudad PRIMARY KEY (id_ciudad),
-    CONSTRAINT uq_ciudad_edicion_nombre_pais UNIQUE (id_edicion, nombre, pais),
-    CONSTRAINT fk_ciudad_edicion FOREIGN KEY (id_edicion)
-        REFERENCES edicion_mundial(id_edicion) -- restrictivo: no se borra una edicion con sedes
+    CONSTRAINT pk_ciudad_sede PRIMARY KEY (id_ciudad),
+    CONSTRAINT uq_ciudad_sede_edicion_nombre_pais UNIQUE (id_edicion, nombre, pais),
+    CONSTRAINT fk_ciudad_sede_edicion FOREIGN KEY (id_edicion)
+        REFERENCES edicion_mundial(id_edicion) 
 );
-
 --Estadio
 CREATE TABLE estadio (
     id_estadio number,
@@ -86,7 +85,7 @@ CREATE TABLE estadio (
     CONSTRAINT uq_estadio_ciudad_nombre UNIQUE (id_ciudad, nombre),
     CONSTRAINT chk_estadio_capacidad CHECK (capacidad > 0 AND capacidad <= 150000),
     CONSTRAINT fk_estadio_ciudad FOREIGN KEY (id_ciudad)
-        REFERENCES ciudad(id_ciudad) -- restrictivo: no se borra una ciudad con estadios
+        REFERENCES ciudad_sede(id_ciudad) 
 );
 
 --Fase
