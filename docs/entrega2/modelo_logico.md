@@ -82,7 +82,7 @@ frentes funcionales de la Sección 7 del enunciado. Las marcadas con
 - Se añaden `num_selecciones`, `nombre_oficial` y `cupo_convocatoria`. El último nos permite saber el número máximo de jugadores por convocatoria, ya que esto va cambiando por edición del mundial.
 
 **ESTADIO**
-- El atributo ciudad queda reemplazado por id `id_ciudad`, que es llave foránea hacia CIUDAD_SEDE..
+- El atributo ciudad queda reemplazado por `id_ciudad`, que es llave foránea hacia CIUDAD_SEDE.
 - Queda eliminado `id_edicion`: la edición del estadio se obtendrá a través de su ciudad. Guardarla en ambos lugares acabaría creando una dependencia transitiva (rompiendo la 3FN).
 
 **PARTIDO**
