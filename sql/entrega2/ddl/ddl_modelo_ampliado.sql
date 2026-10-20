@@ -1,6 +1,6 @@
--- modelo ampliado segunda entrega
+-- ddl modelo ampliado
 
---Limpieza previa (ignora tablas que aun no existen)
+--Limpieza previa 
 BEGIN
     FOR t IN (SELECT column_value AS nombre FROM TABLE(sys.odcivarchar2list(
         'AUDITORIA_EVENTO',
