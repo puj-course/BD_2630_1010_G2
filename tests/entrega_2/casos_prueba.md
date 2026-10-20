@@ -1,10 +1,6 @@
 # Casos de prueba - Entrega 2
 
-En este archivo están las pruebas que hicimos para revisar que la base de datos funciona como esperábamos. Las dividimos en dos partes: primero probamos los roles y privilegios, y después las restricciones que pusimos en el DDL.
-
 ## 1. Roles y privilegios
-
-Para probar los roles usamos estos usuarios:
 
 - Julian (is101002): tiene el rol de administrador. Cuando queríamos probar el auditor, primero ejecutábamos SET ROLE ROL_AUDITOR;
 - Pablo (is101010): tiene el rol de analista deportivo.
