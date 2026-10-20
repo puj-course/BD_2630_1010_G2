@@ -119,7 +119,7 @@ En caso de hablar de llaves foráneas Oracle no crea índices automáticos sobre
 
 - **idx_partido_grupo:** PARTIDO ('id_grupo'), encargado de calcular la tabla de posiciones por grupo.
 - **idx_partido_fase:** PARTIDO ('id_fase'), encargado de listar los partidos de cada fase y ejecutar todo el procedimiento de cierre de fase.
-- **idx_partido_fecha:** PARIDO ('fecha_hora'), permite poder consultar el calendario de los partidos según la fecha.
+- **idx_partido_fecha:** PARTIDO ('fecha_hora'), permite poder consultar el calendario de los partidos según la fecha.
 - **idx_seleccion_grupo:** SELECCION ('id_grupo'), encargado de listar las selecciones de cada grupo.
 - **idx_seleccion_federacion:** SELECCION ('id_federacion'), permite poder consultar el historial a lo largo de la historia de los Mundiales de una selección.
 - **idx_participacion_seleccion:** PARTICIPACION_PARTIDO ('id_seleccion'), permite calcular el rendimiento general de una selección (partidos jugados, goles, goles en contra...).
