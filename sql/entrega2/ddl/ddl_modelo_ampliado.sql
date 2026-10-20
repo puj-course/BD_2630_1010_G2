@@ -21,7 +21,6 @@ DROP TABLE ciudad_sede PURGE;
 DROP TABLE edicion_mundial PURGE;
 DROP TABLE federacion PURGE;
 DROP TABLE confederacion PURGE;
-DROP TABLE asistencia_partido PURGE;
 
 --Confederacion
 CREATE TABLE confederacion (
