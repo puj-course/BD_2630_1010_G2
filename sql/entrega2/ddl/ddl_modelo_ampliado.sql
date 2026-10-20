@@ -208,10 +208,9 @@ CREATE TABLE convocatoria_jugador (
     CONSTRAINT chk_convocatoria_dorsal CHECK (dorsal BETWEEN 1 AND 26),
     CONSTRAINT chk_convocatoria_capitan CHECK (es_capitan IN ('S','N')),
     CONSTRAINT fk_convocatoria_seleccion FOREIGN KEY (id_seleccion)
-        REFERENCES seleccion(id_seleccion) ON DELETE CASCADE, -- cascade: la nomina pertenece a la seleccion
+        REFERENCES seleccion(id_seleccion) ON DELETE CASCADE, 
     CONSTRAINT fk_convocatoria_jugador FOREIGN KEY (id_jugador)
-        REFERENCES jugador(id_jugador) -- restrictivo: se conserva el historial del jugador
-);
+        REFERENCES jugador(id_jugador) 
 
 --Cuerpo tecnico
 CREATE TABLE cuerpo_tecnico (
