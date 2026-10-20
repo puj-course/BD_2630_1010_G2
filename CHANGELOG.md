@@ -160,3 +160,133 @@
 * Se verificó que las operaciones del rol operativo estuvieran limitadas a las acciones requeridas.
 * Finalmente se revisó la documentación y organización de los archivos para asegurar la correspondencia entre el código SQL y los documentos de la Entrega 1.
 
+
+
+
+
+--
+
+# Entrega 2
+
+## Semana 1 
+
+### Objetivos de la semana
+
+* Empezar el modelo ampliado a partir de la evaluación crítica de la Entrega 1.
+* Crear los archivos de la Entrega 2.
+* Definir las tablas nuevas del modelo.
+
+### Tareas realizadas
+
+| Tarea | Responsable(s) | Rama utilizada | Descripción |
+|---|---|---|---|
+| Creación de los documentos de la Entrega 2 | Pablo Marcos | feature/modelo-logico | Se crearon modelo_logico.md y diccionario_datos_ampliado.md en docs/entrega2. |
+| Secciones 1 a 4 del modelo lógico | Pablo Marcos | feature/modelo-logico | Introducción, lista de tablas, cambios frente al modelo inicial y esquema de las tablas. |
+| Primera versión del DDL ampliado | Manuel Garcés | feature/modelo-logico | Primeras tablas nuevas: jugadores, árbitros, estadísticas, boletería, incidencias, etc. |
+
+### Cambios principales
+
+* Se definieron las 20 tablas del modelo ampliado.
+* Se agregaron las tablas propuestas en la evaluación crítica (FASE, GRUPO, CONFEDERACION, JUGADOR y AUDITORIA_EVENTO) y otras nuevas para cubrir las reglas de negocio (FEDERACION, CONVOCATORIA_JUGADOR, CUERPO_TECNICO, ARBITRO, ASIGNACION_ARBITRAL, ENTRADA, ACREDITACION_PRENSA e INCIDENCIA).
+
+### Problemas encontrados
+
+* El modelo lógico y el DDL se hicieron al mismo tiempo y quedaron con nombres de tablas y columnas diferentes. Esto se corrigió más adelante.
+
+---
+
+## Semana 2 
+
+### Objetivos de la semana
+
+* Terminar el modelo lógico.
+* Empezar el modelo físico.
+
+### Tareas realizadas
+
+| Tarea | Responsable(s) | Rama utilizada | Descripción |
+|---|---|---|---|
+| Finalización del modelo lógico | Pablo Marcos, Manuel Garcés | feature/modelo-logico | Esquema de las 20 tablas, relaciones y cardinalidades, reglas de negocio y referencia al diagrama. |
+| Inicio del modelo físico | Pablo Marcos | feature/modelo-logico | Introducción, tipos de datos, convención de nombres y llaves foráneas con ON DELETE. |
+
+### Cambios principales
+
+* Se documentaron todas las relaciones 1:N y N:M del modelo.
+* Se dejaron identificadas las reglas que no se pueden controlar solo con la estructura y que se van a hacer con triggers en la Entrega 3.
+* Se definió si cada llave foránea es restrictiva o CASCADE.
+
+### Problemas encontrados
+
+* Al revisar el DDL de la semana 1 vimos que no coincidía con el modelo lógico (nombres de tablas, columnas y tipos de datos). Quedó pendiente para la siguiente semana.
+* En la semana del 5 al 11 de octubre no se registraron avances en el repositorio.
+
+---
+
+## Semana 3 
+
+### Objetivos de la semana
+
+* Corregir el DDL para que coincida con el modelo lógico y crear las tablas en Oracle.
+* Terminar el diccionario de datos y el modelo físico.
+* Cargar datos de prueba.
+* Hacer la normalización, las consultas avanzadas, los roles y los casos de prueba.
+
+### Tareas realizadas
+
+| Tarea | Responsable(s) | Rama utilizada | Descripción |
+|---|---|---|---|
+| Corrección y ejecución del DDL | Manuel Garcés | feature/modelo-logico | DDL con las 20 tablas, restricciones con nombre, llaves foráneas e índices. Se ejecutó en Oracle. |
+| Diccionario de datos ampliado | Manuel Garcés | feature/modelo-logico | Tipo, si admite nulos, restricciones y descripción de cada columna de las 20 tablas. |
+| Modelo físico (índices y diagrama) | Manuel Garcés, Pablo Marcos | feature/modelo-logico | Justificación de los índices y explicación del diagrama físico. |
+| Diagramas lógico y físico | Manuel Garcés | feature/modelo-logico | Se hicieron con SQL Developer Data Modeler (modelo_logico.png y modelo_fisico.png). |
+| Carga de datos de prueba | Manuel Garcés | feature/modelo-logico | Datos para las 20 tablas en sql/entrega2/dml/carga_datos_prueba.sql. |
+| Normalización | Manuel Garcés, Pablo Marcos | feature/modelo-logico | Justificación de 1FN, 2FN y 3FN de todas las tablas (normalizacion.md). |
+| Consultas avanzadas parte 1 y parte 2 | Manuel Garcés | feature/modelo-logico | 8 consultas: tabla de posiciones, goleadores, ocupación de estadios, goles por fase, resultados, confederaciones, árbitros y resumen de la edición. |
+| Roles y privilegios | Julian Caicedo | feature/modelo-logico | Roles de administrador, analista deportivo y auditor, con sus GRANT y su documentación. |
+| Casos de prueba de roles | Julian Caicedo | feature/modelo-logico | Pruebas de lo que puede y no puede hacer cada rol. |
+| Casos de prueba de integridad | Manuel Garcés | feature/modelo-logico | Pruebas de los CHECK, UNIQUE, llaves foráneas y ON DELETE CASCADE del DDL. |
+
+### Cambios principales
+
+* Los archivos SQL se organizaron en sql/entrega2 (ddl, dml y consultas), como pide el cronograma.
+* La tabla CIUDAD se cambió a CIUDAD_SEDE en el DDL y en todos los documentos.
+* Todas las restricciones quedaron con nombre propio (pk_, fk_, uq_, chk_, idx_).
+* Se revisó que el modelo lógico, el diccionario, el modelo físico y el DDL usen los mismos nombres de tablas y columnas.
+
+### Problemas encontrados
+
+* En el esquema de Oracle ya existía una tabla CIUDAD de otro taller, con otras tablas que dependían de ella, entonces no se podía borrar ni crear la nuestra. Lo solucionamos cambiando el nombre a CIUDAD_SEDE.
+* Al cambiar la tabla ESTADIO se borró sin querer el paréntesis de cierre, y eso hizo que fallaran las tablas que dependían de ella. Se corrigió y se volvió a correr el script.
+* Algunos commits quedaron solo en el computador y no se veían en GitHub hasta que se hizo el Push.
+* El archivo de consultas se subió primero con otro nombre y con un comentario sin los "--", lo que daba error. Se corrigió y se renombró a consultas_avanzadas_parte1.sql.
+
+# Semana 4 — Cierre de la Entrega 2
+
+### Objetivos de la semana
+
+* Revisar y corregir todos los documentos de la Entrega 2 antes de entregar.
+* Dejar cada archivo en la ruta que pide el cronograma.
+* Fusionar la rama feature/modelo-logico a main.
+* Actualizar el CHANGELOG con la entrada final de la Entrega 2.
+
+### Tareas realizadas
+
+| Tarea | Responsable(s) | Rama utilizada | Descripción |
+|---|---|---|---|
+| Revisión del modelo físico | Manuel Garcés | feature/modelo-logico | Se corrigieron errores de escritura y nombres de índices para que coincidan con el DDL. |
+| Revisión del modelo lógico | Pablo Marcos | feature/modelo-logico | Se corrigieron detalles de formato y redacción. |
+| Ajuste de la normalización | Pablo Marcos | feature/modelo-logico | Se completó la explicación de los atributos calculados en la sección 5.2. |
+| Organización de los casos de prueba | Julian Caicedo, Manuel Garcés | feature/modelo-logico | Se unieron los casos de roles y de integridad en tests/entrega2/casos_prueba.md y se borró el archivo viejo. |
+| Pull Request y merge a main | Julian Caicedo | main | Se revisaron los cambios y se fusionó la rama feature/modelo-logico a main. |
+| Actualización del CHANGELOG | Manuel Garcés | main | Se registraron las cuatro semanas de la Entrega 2. |
+
+### Cambios principales
+
+* Todos los archivos de la Entrega 2 quedaron en docs/entrega2, sql/entrega2 y tests/entrega2.
+* La rama main quedó con la versión final de la Entrega 2.
+* Se revisó que todos los documentos usen los mismos nombres de tablas, columnas, restricciones e índices.
+
+### Problemas encontrados
+
+* Los casos de prueba estaban en la carpeta tests y no en tests/entrega2, así que hubo que moverlos.
+* Había nombres de índices escritos diferente en el modelo físico y en el DDL.

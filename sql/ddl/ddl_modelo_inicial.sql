@@ -63,7 +63,7 @@ CREATE TABLE participacion_partido (
   id_seleccion        NUMBER NOT NULL,
   condicion           VARCHAR2(20) NOT NULL,
   goles_marcados      NUMBER NOT NULL,
-  CONSTRAINT fk_participaciones_partido
+  CONSTRAINT fk_participaciones_partidoc
     FOREIGN KEY (id_partido) REFERENCES partido (id_partido)
     ON DELETE CASCADE,
   CONSTRAINT fk_partidos_seleccion
