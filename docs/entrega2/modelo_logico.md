@@ -27,7 +27,7 @@ frentes funcionales de la Sección 7 del enunciado. Las marcadas con
 ### 2.1 Organización del torneo (Sección 7.1)
 
 1. **EDICION_MUNDIAL** (*): cada versión del Mundial.
-2. ***CIUDAD_SEDE**: ciudades sede de una edición, con su país anfitrión.
+2. **CIUDAD_SEDE**: ciudades sede de una edición, con su país anfitrión.
 3. **ESTADIO** (*): estadios ubicados en cada ciudad sede.
 
 ### 2.2 Competencia deportiva (Sección 7.2)
