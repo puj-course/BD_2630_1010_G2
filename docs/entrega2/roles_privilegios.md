@@ -40,5 +40,5 @@ Como el equipo tiene 3 usuarios y 3 roles, Julian tiene dos roles. Para probar e
 - `ORA-01031: insufficient privileges` → el usuario sí ve la tabla, pero no tiene permiso para esa operación (por ejemplo, un auditor haciendo `UPDATE`).
 - `ORA-00942: table or view does not exist` → el usuario no tiene ningún permiso sobre esa tabla, y Oracle responde como si no existiera.
 
-Las pruebas con cada usuario están en `tests/entrega2/casos_prueba.md`.
+Las pruebas con cada usuario están en tests/entrega2/casos_prueba.md.
 
