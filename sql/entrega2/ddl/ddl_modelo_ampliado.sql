@@ -1,37 +1,26 @@
--- ddl modelo ampliado
+-- ddl modelo ampliado 
 
---Limpieza previa 
-BEGIN
-    FOR t IN (SELECT column_value AS nombre FROM TABLE(sys.odcivarchar2list(
-        'AUDITORIA_EVENTO',
-        'INCIDENCIA',
-        'ACREDITACION_PRENSA',
-        'ENTRADA',
-        'ESTADISTICA_JUGADOR_PARTIDO',
-        'ASIGNACION_ARBITRAL',
-        'ARBITRO',
-        'CUERPO_TECNICO',
-        'CONVOCATORIA_JUGADOR',
-        'JUGADOR',
-        'PARTICIPACION_PARTIDO',
-        'PARTIDO',
-        'SELECCION',
-        'GRUPO',
-        'FASE',
-        'ESTADIO',
-        'CIUDAD_SEDE',
-        'EDICION_MUNDIAL',
-        'FEDERACION',
-        'CONFEDERACION'
-    ))) LOOP
-        BEGIN
-            EXECUTE IMMEDIATE 'DROP TABLE ' || t.nombre || ' CASCADE CONSTRAINTS PURGE';
-        EXCEPTION WHEN OTHERS THEN
-            IF SQLCODE != -942 THEN RAISE; END IF;
-        END;
-    END LOOP;
-END;
-/
+--Limpieza previa
+DROP TABLE auditoria_evento PURGE;
+DROP TABLE incidencia PURGE;
+DROP TABLE acreditacion_prensa PURGE;
+DROP TABLE entrada PURGE;
+DROP TABLE estadistica_jugador_partido PURGE;
+DROP TABLE asignacion_arbitral PURGE;
+DROP TABLE arbitro PURGE;
+DROP TABLE cuerpo_tecnico PURGE;
+DROP TABLE convocatoria_jugador PURGE;
+DROP TABLE jugador PURGE;
+DROP TABLE participacion_partido PURGE;
+DROP TABLE partido PURGE;
+DROP TABLE seleccion PURGE;
+DROP TABLE grupo PURGE;
+DROP TABLE fase PURGE;
+DROP TABLE estadio PURGE;
+DROP TABLE ciudad_sede PURGE;
+DROP TABLE edicion_mundial PURGE;
+DROP TABLE federacion PURGE;
+DROP TABLE confederacion PURGE;
 
 --Confederacion
 CREATE TABLE confederacion (
@@ -374,6 +363,3 @@ CREATE INDEX idx_auditoria_tabla_fecha ON auditoria_evento(tabla_afectada, fecha
 
 --Comprobacion
 SELECT table_name FROM user_tables ORDER BY table_name;
-
-
-  
