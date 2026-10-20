@@ -346,7 +346,6 @@ CREATE TABLE auditoria_evento (
 );
 
 --Indices
--- Oracle crea indices automaticos para PK y UNIQUE; estos cubren las FK y filtros frecuentes que quedan sin indice
 
 CREATE INDEX idx_partido_fase ON partido(id_fase); -- partidos por fase y cierre de fase
 CREATE INDEX idx_partido_grupo ON partido(id_grupo); -- tabla de posiciones por grupo
