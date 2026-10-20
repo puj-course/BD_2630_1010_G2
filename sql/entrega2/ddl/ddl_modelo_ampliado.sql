@@ -211,7 +211,7 @@ CREATE TABLE convocatoria_jugador (
         REFERENCES seleccion(id_seleccion) ON DELETE CASCADE, 
     CONSTRAINT fk_convocatoria_jugador FOREIGN KEY (id_jugador)
         REFERENCES jugador(id_jugador) 
-
+();
 --Cuerpo tecnico
 CREATE TABLE cuerpo_tecnico (
     id_miembro number,
