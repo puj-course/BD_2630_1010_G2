@@ -31,6 +31,8 @@ END fn_diferencia_gol;
 
 
 -- 2. Puntos de una selección en la fase de grupos
+-- Solo partidos de grupo que ya terminaron 
+-- Ganar = 3 puntos, Empatar = 1 punto, Perder = 0 puntos
 
 CREATE OR REPLACE FUNCTION fn_puntos_seleccion
   (p_id_seleccion IN seleccion.id_seleccion%TYPE)
@@ -48,4 +50,53 @@ BEGIN
 
 RETURN v_puntos;
 END fn_puntos_seleccion;
+/
+
+
+-- 3. Goles de un jugador en una edicion del mundial   
+
+CREATE OR REPLACE FUNCTION fn_goles_jugador_edicion
+  (p_id_jugador IN jugador.id_jugador%TYPE, p_id_edicion IN edicion_mundial.id_edicion%TYPE)
+RETURN NUMBER 
+AS
+  v_goles NUMBER;
+BEGIN
+  SELECT NVL(SUM(e.goles), 0)
+    INTO v_goles
+    FROM estadistica_jugador_edicion e
+    JOIN convocatoria _jugador c ON c.id_convocatoria = e.id_convocatoria
+   WHERE c.id_jugador = p_id_jugador
+     AND s.id_edicion = p_id_edicion;
+
+RETURN v_goles;
+END fn_goles_jugador_edicion;
+/
+
+
+-- 4. Puesto de un jugador en el ranking de goleadores 
+-- Si no ha marcado ningún gol no entra en ningún ranking
+
+CREATE OR REPLACE FUNCTION fn_puesto_goleador
+  (p_id_jugador IN jugador.id_jugador%TYPE,
+   p_id_edicion IN edicion_mundial.id_edicion%TYPE)
+RETURN NUMBER
+AS
+  v_mis_goles   NUMBER;
+  v_por_encima  NUMBER;
+BEGIN
+  -- goles del jugador (usa la funcion 3)
+  v_mis_goles := fn_goles_jugador_edicion(p_id_jugador, p_id_edicion);
+
+  IF v_mis_goles = 0 THEN
+  RETURN NULL;
+  END IF;
+
+  -- cuantos jugadores tienen mas goles en esa edicion
+  SELECT COUNT(*)
+    INTO v_por_encima
+    FROM jugador j
+   WHERE fn_goles_jugador_edicion(j.id_jugador, p_id_edicion) > v_mis_goles;
+
+RETURN v_por_encima + 1;
+END fn_puesto_goleador;
 /
