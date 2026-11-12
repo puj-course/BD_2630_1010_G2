@@ -40,7 +40,7 @@ RETURN NUMBER
 AS
   v_puntos  NUMBER;
 BEGIN
-  SELECT NVL(SUM(CASE WHEN pp.resultado = 'G' THEN 3WHEN pp.resultado = 'E' THEN 1 ELSE 0 END), 0)
+  SELECT NVL(SUM(CASE WHEN pp.resultado = 'G' THEN 3 WHEN pp.resultado = 'E' THEN 1 ELSE 0 END), 0)
     INTO v_puntos
     FROM participacion_partido pp
     JOIN partido p ON p.id_partido = pp.id_partido
@@ -63,8 +63,9 @@ AS
 BEGIN
   SELECT NVL(SUM(e.goles), 0)
     INTO v_goles
-    FROM estadistica_jugador_edicion e
-    JOIN convocatoria _jugador c ON c.id_convocatoria = e.id_convocatoria
+    FROM estadistica_jugador_partido e
+    JOIN convocatoria_jugador c ON c.id_convocatoria = e.id_convocatoria
+    JOIN seleccion s ON s.id_seleccion = c.id_seleccion
    WHERE c.id_jugador = p_id_jugador
      AND s.id_edicion = p_id_edicion;
 
@@ -100,3 +101,56 @@ BEGIN
 RETURN v_por_encima + 1;
 END fn_puesto_goleador;
 /
+
+
+-- 5. Cupo máximo en la convocatoria de una selección 
+-- Máximo de jugadores por una selección edición 2026 = 26 jugadores 
+-- Cupo de la edición menos jugadores ya convocados
+
+CREATE OR REPLACE FUNCTION fn_cupo_disponible
+  (p_id_seleccion IN seleccion.id_seleccion%TYPE)
+RETURN NUMBER 
+AS 
+  v_cupo  edicion_mundial.cupo_convocatoria%TYPE;
+  v_convocados  NUMBER;
+BEGIN
+  -- cupo máximo de la edición en la que juega la selección 
+  SELECT e.cupo_convocatoria
+    INTO v_cupo
+    FROM seleccion s 
+    JOIN edicion_mundial e ON e.id_edicion = s.id_edicion
+   WHERE s.id_seleccion = p_id_seleccion;
+
+  -- jugadores que ya tiene convocados
+  SELECT COUNT(*)
+    INTO v_convocados
+    FROM convocatoria_jugador
+   WHERE id_seleccion = p_id_seleccion;
+
+RETURN v_cupo - v_convocados;
+EXCEPTION 
+  WHEN NO_DATA_FOUND THEN
+    RETURN NULL;
+END fn_cupo_disponible;
+/
+
+
+-- PRUEBAS (con los datos de ejemplo de carga_datos_prueba.sql)
+
+-- Diferencia de gol y puntos 
+SELECT fn_diferencia_gol(1) AS dg_mexico FROM dual; -- 0
+SELECT fn_diferencia_gol(2) AS dg_colombia FROM dual; -- 3
+SELECT fn_puntos_seleccion(2) AS puntos_colombia FROM dual; -- 5
+
+-- Ranking de goleadores del Mundial 2026
+SELECT fn_puesto_goleador (j.id_jugador, 1) AS puesto,
+       j.nombres || ' ' || j.apellidos AS jugador, 
+       fn_goles_jugador_edicion(j.id_jugador, 1) AS goles 
+  FROM jugador j
+  WHERE fn_goles_jugador_edicion(j.id_jugador, 1) > 0
+  ORDER BY puesto;
+-- puesto 1: Juan Pablo Cardenas Rios (6), puesto 2: Riku Tanaka (5)
+
+-- Cupo de convocatoria 
+SELECT fn_cupo_disponible(1) AS cupo_mexico FROM dual; -- 23
+SELECT fn_cupo_disponible(999) AS no_existente FROM dual; -- (null);
