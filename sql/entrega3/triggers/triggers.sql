@@ -100,3 +100,32 @@ END trg_validar_rangos_marcador;
 /
 
 
+-- 3. Anti-duplicidad
+-- un partido solo puede tener dos selecciones y no se puede repetir la misma
+CREATE OR REPLACE TRIGGER trg_participacion_duplicada
+BEFORE INSERT ON participacion_partido
+FOR EACH ROW
+DECLARE
+  v_repetida NUMBER;
+  v_total NUMBER;
+BEGIN
+  -- la seleccion ya esta en este partido?
+  SELECT COUNT(*) INTO v_repetida
+    FROM participacion_partido
+   WHERE id_partido = :NEW.id_partido
+     AND id_seleccion = :NEW.id_seleccion;
+
+  IF v_repetida > 0 THEN
+    RAISE_APPLICATION_ERROR(-20004, 'Esa seleccion ya esta registrada en este partido');
+  END IF;
+
+  -- el partido ya tiene sus dos selecciones?
+  SELECT COUNT(*) INTO v_total
+    FROM participacion_partido
+   WHERE id_partido = :NEW.id_partido;
+
+  IF v_total >= 2 THEN
+    RAISE_APPLICATION_ERROR(-20005, 'El partido ya tiene sus dos selecciones');
+  END IF;
+END trg_participacion_duplicada;
+/
