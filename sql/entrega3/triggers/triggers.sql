@@ -129,3 +129,52 @@ BEGIN
   END IF;
 END trg_participacion_duplicada;
 /
+
+
+-- 4. Consistencia del marcador
+-- cuando un partido pasa a FINALIZADO, los goles de cada seleccion
+-- tienen que ser iguales a la suma de goles de sus jugadores
+-- (solo se revisa si el partido ya tiene estadisticas cargadas)
+CREATE OR REPLACE TRIGGER trg_consistencia_marcador
+BEFORE UPDATE OF estado ON partido
+FOR EACH ROW
+WHEN (NEW.estado = 'FINALIZADO')
+DECLARE
+  CURSOR c_participaciones (p_partido NUMBER) IS
+    SELECT id_seleccion, goles_marcados
+      FROM participacion_partido
+     WHERE id_partido = p_partido;
+
+  v_seleccion participacion_partido.id_seleccion%TYPE;
+  v_marcador participacion_partido.goles_marcados%TYPE;
+  v_goles_jugadores NUMBER;
+  v_estadisticas NUMBER;
+BEGIN
+  -- si no hay estadisticas todavia no hay con que comparar
+  SELECT COUNT(*) INTO v_estadisticas
+    FROM estadistica_jugador_partido
+   WHERE id_partido = :NEW.id_partido;
+
+  IF v_estadisticas > 0 THEN
+    OPEN c_participaciones(:NEW.id_partido);
+    LOOP
+      FETCH c_participaciones INTO v_seleccion, v_marcador;
+      EXIT WHEN c_participaciones%NOTFOUND;
+
+      -- goles de los jugadores de esa seleccion en este partido
+      SELECT NVL(SUM(e.goles), 0) INTO v_goles_jugadores
+        FROM estadistica_jugador_partido e
+        JOIN convocatoria_jugador c ON c.id_convocatoria = e.id_convocatoria
+       WHERE e.id_partido = :NEW.id_partido
+         AND c.id_seleccion = v_seleccion;
+
+      IF v_goles_jugadores <> v_marcador THEN
+        CLOSE c_participaciones;
+        RAISE_APPLICATION_ERROR(-20006, 'El marcador de la seleccion ' || v_seleccion ||
+          ' (' || v_marcador || ') no coincide con los goles de sus jugadores (' || v_goles_jugadores || ')');
+      END IF;
+    END LOOP;
+    CLOSE c_participaciones;
+  END IF;
+END trg_consistencia_marcador;
+/
