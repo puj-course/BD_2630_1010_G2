@@ -69,3 +69,34 @@ BEGIN
   VALUES (v_id, 'ESTADISTICA_JUGADOR_PARTIDO', v_operacion, v_registro, USER, SYSDATE, v_antes, v_despues);
 END trg_auditoria_estadistica;
 /
+
+-- 2. Validacion de rangos
+-- no deja guardar goles ni asistencias negativas en las estadisticas
+CREATE OR REPLACE TRIGGER trg_validar_rangos
+BEFORE INSERT OR UPDATE ON estadistica_jugador_partido
+FOR EACH ROW
+BEGIN
+  IF :NEW.goles < 0 THEN
+    RAISE_APPLICATION_ERROR(-20001, 'Los goles no pueden ser negativos');
+  END IF;
+
+  IF :NEW.asistencias < 0 THEN
+    RAISE_APPLICATION_ERROR(-20002, 'Las asistencias no pueden ser negativas');
+  END IF;
+END trg_validar_rangos;
+/
+
+
+-- 2. Validacion de rangos en el marcador
+-- lo mismo pero para los goles de cada seleccion en el partido
+CREATE OR REPLACE TRIGGER trg_validar_rangos_marcador
+BEFORE INSERT OR UPDATE ON participacion_partido
+FOR EACH ROW
+BEGIN
+  IF :NEW.goles_marcados < 0 OR :NEW.goles_penales < 0 THEN
+    RAISE_APPLICATION_ERROR(-20003, 'El marcador no puede tener goles negativos');
+  END IF;
+END trg_validar_rangos_marcador;
+/
+
+
