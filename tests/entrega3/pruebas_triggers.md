@@ -2,7 +2,7 @@ Pruebas de triggers - Entrega 3
 
 Aqui nosotros vamos a probar que los 4 triggers obligatorios funcionan. Todo se corrio en SQL Developer con el usuario IS101004 y con los datos de carga_datos_prueba.sql.
 
-igual que en las anteriores pruebas, en cada prueba ponemos lo que ejecutamos, lo que esperabamos y lo que salio.
+igual que en las anteriores pruebas, en cada prueba ponemos lo que ejecutamos, y lo que salio.
 
 1. Auditoria
 
@@ -19,8 +19,6 @@ FROM auditoria_evento
 ORDER BY id_auditoria DESC;
 
 ROLLBACK;
-
-Esperado: un registro nuevo de PARTIDO, UPDATE, id 1, antes estado=FINALIZADO y despues estado=SUSPENDIDO.
 
 Obtenido:
 ![alt text](image-1.png)
@@ -39,7 +37,6 @@ ORDER BY id_auditoria DESC;
 
 ROLLBACK;
 
-Esperado: un registro nuevo de ESTADISTICA_JUGADOR_PARTIDO, UPDATE, id 1, y las asistencias con 1 mas en el valor nuevo.
 
 Obtenido:
 ![alt text](image-2.png)
@@ -52,34 +49,32 @@ Triggers: trg_validar_rangos y trg_validar_rangos_marcador
 
 # Prueba 2.1 - Goles negativos
 
-UPDATE estadistica_jugador_partido SET asistencias = -2 WHERE id_estadistica = 1;
+UPDATE estadistica_jugador_partido SET goles = -1 WHERE id_estadistica = 1;
 ROLLBACK;
 
-Esperado: ORA-20001: Los goles no pueden ser negativos
 
 Obtenido:
-![alt text](image-3.png)
+![alt text](image-10.png)
 
+Salio el error ORA-20001: Los goles no pueden ser negativos. El trigger no dejo guardar el cambio.
 
 # Prueba 2.2 - Asistencias negativas
 
 UPDATE estadistica_jugador_partido SET asistencias = -2 WHERE id_estadistica = 1;
 ROLLBACK;
 
-Esperado: ORA-20002: Las asistencias no pueden ser negativas
-
 Obtenido:
 ![alt text](image-4.png)
+Salio el error ORA-20002: Las asistencias no pueden ser negativas. El trigger no dejo guardar el cambio.
 
 # Prueba 2.3 - Marcador negativo
 
 UPDATE participacion_partido SET goles_marcados = -1 WHERE id_participacion = 1;
 ROLLBACK;
 
-Esperado: ORA-20003: El marcador no puede tener goles negativos
-
 Obtenido:
 ![alt text](image-5.png)
+Salio el error ORA-20003: El marcador no puede tener goles negativos. El marcador de Mexico no se cambio.
 
 
 3. Anti-duplicidad
@@ -93,10 +88,9 @@ El partido 1 es Mexico vs Colombia, o sea que ya tiene sus dos selecciones. Mexi
 INSERT INTO participacion_partido VALUES (99, 1, 1, 'LOCAL', 0, NULL, NULL);
 ROLLBACK;
 
-Esperado: ORA-20004: Esa seleccion ya esta registrada en este partido
-
 Obtenido:
 ![alt text](image-6.png)
+Salio el error ORA-20004: Esa seleccion ya esta registrada en este partido. No se inserto la fila repetida.
 
 
 # Prueba 3.2 - Meter una tercera seleccion
@@ -106,10 +100,9 @@ Japon (seleccion 3) no juega ese partido, pero el partido ya tiene dos.
 INSERT INTO participacion_partido VALUES (99, 1, 3, 'LOCAL', 0, NULL, NULL);
 ROLLBACK;
 
-Esperado: ORA-20005: El partido ya tiene sus dos selecciones
-
 Obtenido:
 ![alt text](image-7.png)
+Salio el error ORA-20005: El partido ya tiene sus dos selecciones. No se pudo agregar a Japon.
 
 
 # 4. Consistencia del marcador
@@ -123,11 +116,9 @@ En el partido 1 Mexico hizo 1 gol y en las estadisticas sus jugadores tambien ti
 UPDATE partido SET estado = 'FINALIZADO' WHERE id_partido = 1;
 ROLLBACK;
 
-Esperado: 1 fila actualizada, sin error.
-
 Obtenido:
 ![alt text](image-8.png)
-
+Salio el error ORA-20005: El partido ya tiene sus dos selecciones. No se pudo agregar a Japon.
 
 # Prueba 4.2 - Marcador que no cuadra
 
@@ -137,10 +128,9 @@ UPDATE participacion_partido SET goles_marcados = 3 WHERE id_participacion = 1;
 UPDATE partido SET estado = 'FINALIZADO' WHERE id_partido = 1;
 ROLLBACK;
 
-Esperado: ORA-20006: El marcador de la seleccion 1 (3) no coincide con los goles de sus jugadores (1)
-
 Obtenido:
 ![alt text](image-9.png)
+El primer UPDATE si paso, pero al finalizar el partido salio el error ORA-20006: El marcador de la seleccion 1 (3) no coincide con los goles de sus jugadores (1). El trigger no dejo finalizar el partido.
 
 ## Resumen
 
