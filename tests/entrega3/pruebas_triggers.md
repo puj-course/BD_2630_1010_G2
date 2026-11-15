@@ -27,7 +27,7 @@ Obtenido:
 
 En l aimagen se evidencia que salio un registro nuevo en auditoria_evento: PARTIDO, UPDATE, id 1, usuario IS101004, antes estado=FINALIZADO y despues estado=SUSPENDIDO.
 
-### Prueba 1.2 - Cambiar una estadistica
+# Prueba 1.2 - Cambiar una estadistica
 
 Le sumamos una asistencia a la estadistica 1.
 
@@ -42,96 +42,105 @@ ROLLBACK;
 Esperado: un registro nuevo de ESTADISTICA_JUGADOR_PARTIDO, UPDATE, id 1, y las asistencias con 1 mas en el valor nuevo.
 
 Obtenido:
+![alt text](image-2.png)
 
----
+Aqui salio un registro nuevo en auditoria_evento: ESTADISTICA_JUGADOR_PARTIDO, UPDATE, id 1, antes goles=0, asistencias=0 y despues goles=0, asistencias=1.
 
-## 2. Validacion de rangos
+2. Validacion de rangos
 
 Triggers: trg_validar_rangos y trg_validar_rangos_marcador
 
-### Prueba 2.1 - Goles negativos
+# Prueba 2.1 - Goles negativos
 
-UPDATE estadistica_jugador_partido SET goles = -1 WHERE id_estadistica = 1;
+UPDATE estadistica_jugador_partido SET asistencias = -2 WHERE id_estadistica = 1;
+ROLLBACK;
 
 Esperado: ORA-20001: Los goles no pueden ser negativos
 
 Obtenido:
+![alt text](image-3.png)
 
-### Prueba 2.2 - Asistencias negativas
+
+# Prueba 2.2 - Asistencias negativas
 
 UPDATE estadistica_jugador_partido SET asistencias = -2 WHERE id_estadistica = 1;
+ROLLBACK;
 
 Esperado: ORA-20002: Las asistencias no pueden ser negativas
 
 Obtenido:
+![alt text](image-4.png)
 
-### Prueba 2.3 - Marcador negativo
+# Prueba 2.3 - Marcador negativo
 
 UPDATE participacion_partido SET goles_marcados = -1 WHERE id_participacion = 1;
+ROLLBACK;
 
 Esperado: ORA-20003: El marcador no puede tener goles negativos
 
 Obtenido:
+![alt text](image-5.png)
 
----
 
-## 3. Anti-duplicidad
+3. Anti-duplicidad
 
 Trigger: trg_participacion_duplicada
 
 El partido 1 es Mexico vs Colombia, o sea que ya tiene sus dos selecciones. Mexico es la seleccion 1.
 
-### Prueba 3.1 - Meter otra vez a Mexico en el mismo partido
+# Prueba 3.1 - Meter otra vez a Mexico en el mismo partido
 
 INSERT INTO participacion_partido VALUES (99, 1, 1, 'LOCAL', 0, NULL, NULL);
+ROLLBACK;
 
 Esperado: ORA-20004: Esa seleccion ya esta registrada en este partido
 
 Obtenido:
+![alt text](image-6.png)
 
-### Prueba 3.2 - Meter una tercera seleccion
+
+# Prueba 3.2 - Meter una tercera seleccion
 
 Japon (seleccion 3) no juega ese partido, pero el partido ya tiene dos.
 
 INSERT INTO participacion_partido VALUES (99, 1, 3, 'LOCAL', 0, NULL, NULL);
+ROLLBACK;
 
 Esperado: ORA-20005: El partido ya tiene sus dos selecciones
 
 Obtenido:
+![alt text](image-7.png)
 
----
 
-## 4. Consistencia del marcador
+# 4. Consistencia del marcador
 
 Trigger: trg_consistencia_marcador
 
 En el partido 1 Mexico hizo 1 gol y en las estadisticas sus jugadores tambien tienen 1 gol en total.
 
-### Prueba 4.1 - Marcador que si cuadra
+# Prueba 4.1 - Marcador que si cuadra
 
 UPDATE partido SET estado = 'FINALIZADO' WHERE id_partido = 1;
-
 ROLLBACK;
 
 Esperado: 1 fila actualizada, sin error.
 
 Obtenido:
+![alt text](image-8.png)
 
-### Prueba 4.2 - Marcador que no cuadra
+
+# Prueba 4.2 - Marcador que no cuadra
 
 Le ponemos 3 goles a Mexico, pero sus jugadores solo tienen 1, y despues finalizamos el partido.
 
 UPDATE participacion_partido SET goles_marcados = 3 WHERE id_participacion = 1;
-
 UPDATE partido SET estado = 'FINALIZADO' WHERE id_partido = 1;
-
 ROLLBACK;
 
 Esperado: ORA-20006: El marcador de la seleccion 1 (3) no coincide con los goles de sus jugadores (1)
 
 Obtenido:
-
----
+![alt text](image-9.png)
 
 ## Resumen
 
