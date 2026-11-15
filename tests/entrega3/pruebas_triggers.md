@@ -118,7 +118,7 @@ ROLLBACK;
 
 Obtenido:
 ![alt text](image-8.png)
-Salio el error ORA-20005: El partido ya tiene sus dos selecciones. No se pudo agregar a Japon.
+Salio 1 fila actualizada y ningun error, porque el marcador coincide con los goles de los jugadores.
 
 # Prueba 4.2 - Marcador que no cuadra
 
@@ -134,9 +134,8 @@ El primer UPDATE si paso, pero al finalizar el partido salio el error ORA-20006:
 
 ## Resumen
 
-| Trigger | Pruebas | Funciona |
-|---|---|---|
-| Auditoria | 1.1 y 1.2 | |
-| Validacion de rangos | 2.1, 2.2 y 2.3 | |
-| Anti-duplicidad | 3.1 y 3.2 | |
-| Consistencia del marcador | 4.1 y 4.2 | |
+Resumen
+- Auditoria 1.1 y 1.2: funciona
+- Validacion de rangos 2.1, 2.2 y 2.3: funciona
+- Anti-duplicidad (3.1 y 3.2): funciona
+- Consistencia del marcador 4.1 y 4.2: funciona
