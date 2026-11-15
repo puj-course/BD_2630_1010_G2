@@ -290,3 +290,38 @@
 
 * Los casos de prueba estaban en la carpeta tests y no en tests/entrega2, así que hubo que moverlos.
 * Había nombres de índices escritos diferente en el modelo físico y en el DDL.
+
+--
+
+
+# Entrega 3
+
+## Semana 1 (9 - 15 noviembre)
+
+### Objetivos de la semana
+
+* Hacer las funciones, procedimientos y triggers que pide el enunciado (seccion 8.3.1).
+* Probar que los triggers funcionan y dejar la evidencia.
+* Documentar la programacion en base de datos.
+
+### Tareas realizadas
+
+* Funciones (Pablo Marcos, rama feature/funciones): se hicieron las funciones de diferencia de gol, puntos por seleccion, goles de un jugador por edicion, puesto en el ranking de goleadores y cupo disponible de convocatoria.
+* Procedimientos (Pablo Marcos, rama feature/procedimientos): se empezo con el procedimiento para registrar el resultado de un partido de forma controlada. Faltan la carga masiva, la tabla de posiciones y el cierre de fase.
+* Triggers (Manuel Garcés, rama feature/trigger): se hicieron los triggers de auditoria de partidos y estadisticas, validacion de rangos, anti-duplicidad y consistencia del marcador.
+* Pruebas de los triggers (Manuel Garcés, rama feature/trigger): se hicieron 9 pruebas con el comando, lo que se esperaba, lo que salio y una captura de cada una en tests/entrega3/pruebas_triggers.md.
+* Documentacion de la programacion (Manuel Garcés, rama feature/documentacion-bd): se explico para que sirve, que recibe y que hace cada funcion, procedimiento y trigger en docs/entrega3/documentacion_programacion_bd.md.
+* Avance en el README (Manuel Garcés, rama feature/documentacion-bd): se agrego una seccion con el avance de la Entrega 3.
+
+### Cambios principales
+
+* Se creo la carpeta sql/entrega3 con funciones, procedimientos y triggers.
+* Se agregaron 6 triggers que cubren los 4 obligatorios del enunciado.
+* Se crearon tests/entrega3/pruebas_triggers.md y docs/entrega3/documentacion_programacion_bd.md.
+
+### Problemas encontrados
+
+* En la base faltaban tres tablas (convocatoria_jugador, cuerpo_tecnico y estadistica_jugador_partido) porque se habian creado con la version del DDL que tenia el parentesis sin cerrar. Hubo que volver a correr el DDL corregido y la carga de datos.
+* La tabla PARTIDO no se podia borrar porque habia una tabla PARTIDO de un taller anterior con una llave foranea apuntando a ella. Se borro con DROP TABLE partido CASCADE CONSTRAINTS y se volvio a crear la del proyecto.
+* La rama feature/procedimientos se creo desde una version vieja de main y no tenia funciones.sql. Se arreglo con Update from main.
+* Los roles los habia creado otro usuario, asi que al correr de nuevo roles_privilegios.sql salio ORA-01924 al asignarlos. Los permisos sobre las tablas si se volvieron a dar bien.

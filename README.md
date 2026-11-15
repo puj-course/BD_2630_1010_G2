@@ -167,6 +167,26 @@ El detalle exacto de qué archivo va dentro de cada subcarpeta, semana a semana,
 
 ---
 
+Avance de la Entrega 3
+
+Semana 1
+- funciones.sql: terminado
+- procedimientos.sql: en progreso
+- triggers.sql: terminado
+- pruebas_triggers.md: terminado
+- documentacion_programacion_bd.md: en progreso
+
+Semana 2
+- Aplicacion (conexion a la base y catalogos): pendiente
+- arquitectura_aplicacion.md: pendiente
+
+Semana 3
+- Aplicacion (partidos, estadisticas y consultas): pendiente
+- Reportes y reportes.md: pendiente
+
+Este avance se actualiza cada semana.
+
+
 ## Contacto
 
 De presentar alguna inquietud con respecto al proyecto, uso de Git para este o los parámetros planteados, contactar a la monitora:
