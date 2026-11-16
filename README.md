@@ -170,11 +170,12 @@ El detalle exacto de qué archivo va dentro de cada subcarpeta, semana a semana,
 Avance de la Entrega 3
 
 Semana 1
+Semana 1
 - funciones.sql: terminado
-- procedimientos.sql: en progreso
+- procedimientos.sql: terminado
 - triggers.sql: terminado
 - pruebas_triggers.md: terminado
-- documentacion_programacion_bd.md: en progreso
+- documentacion_programacion_bd.md: terminado
 
 Semana 2
 - Aplicacion (conexion a la base, ventana principal y los 7 catalogos): terminado
