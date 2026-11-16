@@ -262,3 +262,107 @@ EXCEPTION
     DBMS_OUTPUT.PUT_LINE('Error: el grupo ' || p_id_grupo || ' no existe');
 END pr_tabla_posiciones;
 /
+
+
+
+-- BLOQUE C: Cierre de fase
+
+-- 4. Cierre de fase
+-- Solo deja cerrar la fase si todos sus partidos estan FINALIZADO.
+-- Si es la fase de grupos muestra los 2 primeros de cada grupo, si es de eliminacion muestra los ganadores.
+
+CREATE OR REPLACE PROCEDURE pr_cierre_fase
+  (p_id_fase IN fase.id_fase%TYPE)
+AS
+  CURSOR c_grupos (p_fase NUMBER) IS
+    SELECT id_grupo, nombre
+      FROM grupo
+     WHERE id_fase = p_fase
+     ORDER BY nombre;
+
+  CURSOR c_clasificados (p_grupo NUMBER) IS
+    SELECT f.pais
+      FROM seleccion s
+      JOIN federacion f ON f.id_federacion = s.id_federacion
+     WHERE s.id_grupo = p_grupo
+     ORDER BY fn_puntos_seleccion(s.id_seleccion) DESC,
+              fn_diferencia_gol(s.id_seleccion) DESC,
+              f.pais;
+
+  CURSOR c_ganadores (p_fase NUMBER) IS
+    SELECT f.pais
+      FROM participacion_partido pp
+      JOIN partido p ON p.id_partido = pp.id_partido
+      JOIN seleccion s ON s.id_seleccion = pp.id_seleccion
+      JOIN federacion f ON f.id_federacion = s.id_federacion
+     WHERE p.id_fase = p_fase
+       AND pp.resultado = 'G'
+     ORDER BY p.fecha_hora;
+
+  v_nombre_fase   fase.nombre%TYPE;
+  v_pendientes    NUMBER;
+  v_id_grupo      grupo.id_grupo%TYPE;
+  v_nombre_grupo  grupo.nombre%TYPE;
+  v_pais          federacion.pais%TYPE;
+  v_contador      NUMBER;
+  e_partidos_pendientes EXCEPTION;
+
+BEGIN
+  -- si la fase no existe salta NO_DATA_FOUND
+  SELECT nombre
+    INTO v_nombre_fase
+    FROM fase
+   WHERE id_fase = p_id_fase;
+
+  -- cuantos partidos de la fase no estan finalizados
+  SELECT COUNT(*)
+    INTO v_pendientes
+    FROM partido
+   WHERE id_fase = p_id_fase
+     AND estado <> 'FINALIZADO';
+
+  IF v_pendientes > 0 THEN
+    RAISE e_partidos_pendientes;
+  END IF;
+
+  DBMS_OUTPUT.PUT_LINE('Cierre de la fase ' || v_nombre_fase);
+
+  IF v_nombre_fase = 'GRUPOS' THEN
+    -- por cada grupo se muestran los 2 primeros
+    OPEN c_grupos(p_id_fase);
+    LOOP
+      FETCH c_grupos INTO v_id_grupo, v_nombre_grupo;
+      EXIT WHEN c_grupos%NOTFOUND;
+      DBMS_OUTPUT.PUT_LINE('Grupo ' || v_nombre_grupo || ' - clasificados:');
+
+      v_contador := 0;
+      OPEN c_clasificados(v_id_grupo);
+      LOOP
+        FETCH c_clasificados INTO v_pais;
+        EXIT WHEN c_clasificados%NOTFOUND OR v_contador = 2;
+        v_contador := v_contador + 1;
+        DBMS_OUTPUT.PUT_LINE('  ' || v_contador || '. ' || v_pais);
+      END LOOP;
+      CLOSE c_clasificados;
+    END LOOP;
+    CLOSE c_grupos;
+  ELSE
+    -- en eliminacion pasan los que ganaron su partido
+    DBMS_OUTPUT.PUT_LINE('Pasan a la siguiente fase:');
+    OPEN c_ganadores(p_id_fase);
+    LOOP
+      FETCH c_ganadores INTO v_pais;
+      EXIT WHEN c_ganadores%NOTFOUND;
+      DBMS_OUTPUT.PUT_LINE('  ' || v_pais);
+    END LOOP;
+    CLOSE c_ganadores;
+  END IF;
+  
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+    DBMS_OUTPUT.PUT_LINE('Error: la fase ' || p_id_fase || ' no existe');
+  WHEN e_partidos_pendientes THEN
+    DBMS_OUTPUT.PUT_LINE('Error: la fase no se puede cerrar, tiene ' || v_pendientes|| ' partido(s) sin finalizar');
+
+END pr_cierre_fase;
+/
