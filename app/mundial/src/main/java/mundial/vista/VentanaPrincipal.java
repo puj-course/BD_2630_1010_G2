@@ -70,10 +70,10 @@ public class VentanaPrincipal extends JFrame {
         itemEdiciones.addActionListener(e -> new VentanaEdiciones().setVisible(true));
         itemCiudades.addActionListener(e -> new VentanaCiudades().setVisible(true));
         itemRegistrar.addActionListener(e -> new VentanaPartidos().setVisible(true));
-        itemPosiciones.addActionListener(e -> pendiente());
-        itemResultados.addActionListener(e -> pendiente());
-        itemIncidencias.addActionListener(e -> pendiente());
-        itemReportes.addActionListener(e -> pendiente());
+        itemPosiciones.addActionListener(e -> new VentanaPosiciones().setVisible(true));
+        itemResultados.addActionListener(e -> new VentanaResultados().setVisible(true));
+        itemIncidencias.addActionListener(e -> new VentanaIncidencias().setVisible(true));
+        itemReportes.addActionListener(e -> new VentanaReportes().setVisible(true));
     }
 
     private void pendiente() {
