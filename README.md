@@ -170,7 +170,6 @@ El detalle exacto de qué archivo va dentro de cada subcarpeta, semana a semana,
 Avance de la Entrega 3
 
 Semana 1
-Semana 1
 - funciones.sql: terminado
 - procedimientos.sql: terminado
 - triggers.sql: terminado
