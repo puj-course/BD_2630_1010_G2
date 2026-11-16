@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-// Partidos: muestra todos los partidos y deja programar uno nuevo
+// Partidos: muestra todos los partidos, deja programar uno nuevo y registrar su resultado
 public class VentanaPartidos extends JFrame {
 
     private RepositoryPartido repo = new RepositoryPartido();
@@ -57,12 +57,14 @@ public class VentanaPartidos extends JFrame {
         // botones de abajo
         JButton btnProgramar = new JButton("Programar");
         JButton btnEstadisticas = new JButton("Estadisticas");
+        JButton btnResultado = new JButton("Registrar resultado");
         JButton btnEliminar = new JButton("Eliminar");
         JButton btnLimpiar = new JButton("Limpiar");
 
         JPanel panelBotones = new JPanel();
         panelBotones.add(btnProgramar);
         panelBotones.add(btnEstadisticas);
+        panelBotones.add(btnResultado);
         panelBotones.add(btnEliminar);
         panelBotones.add(btnLimpiar);
 
@@ -72,6 +74,7 @@ public class VentanaPartidos extends JFrame {
 
         btnProgramar.addActionListener(e -> programar());
         btnEstadisticas.addActionListener(e -> abrirEstadisticas());
+        btnResultado.addActionListener(e -> registrarResultado());
         btnEliminar.addActionListener(e -> eliminar());
         btnLimpiar.addActionListener(e -> limpiar());
 
@@ -132,6 +135,7 @@ public class VentanaPartidos extends JFrame {
             JOptionPane.showMessageDialog(this, "No se pudo programar el partido:\n" + repo.getError());
         }
     }
+
     // abre las estadisticas del partido que este seleccionado en la tabla
     private void abrirEstadisticas() {
         int fila = tabla.getSelectedRow();
@@ -144,6 +148,51 @@ public class VentanaPartidos extends JFrame {
         new VentanaEstadisticas(idPartido, titulo).setVisible(true);
     }
 
+    // pide los goles del partido seleccionado y llama al procedimiento
+    private void registrarResultado() {
+        int fila = tabla.getSelectedRow();
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this, "Seleccione un partido de la tabla");
+            return;
+        }
+        if (modelo.getValueAt(fila, 8).toString().equals("FINALIZADO")) {
+            JOptionPane.showMessageDialog(this, "Ese partido ya esta finalizado");
+            return;
+        }
+        int idPartido = Integer.parseInt(modelo.getValueAt(fila, 0).toString());
+        String local = modelo.getValueAt(fila, 5).toString();
+        String visitante = modelo.getValueAt(fila, 7).toString();
+
+        String textoLocal = JOptionPane.showInputDialog(this, "Goles de " + local + ":");
+        if (textoLocal == null) {
+            return;
+        }
+        String textoVisitante = JOptionPane.showInputDialog(this, "Goles de " + visitante + ":");
+        if (textoVisitante == null) {
+            return;
+        }
+        int golesLocal;
+        int golesVisitante;
+        try {
+            golesLocal = Integer.parseInt(textoLocal.trim());
+            golesVisitante = Integer.parseInt(textoVisitante.trim());
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Los goles deben ser numeros");
+            return;
+        }
+        if (golesLocal < 0 || golesVisitante < 0) {
+            JOptionPane.showMessageDialog(this, "Los goles no pueden ser negativos");
+            return;
+        }
+
+        if (repo.registrarResultado(idPartido, golesLocal, golesVisitante)) {
+            JOptionPane.showMessageDialog(this, "Resultado registrado: " + local + " " + golesLocal + " - "
+                    + golesVisitante + " " + visitante);
+            cargarTabla();
+        } else {
+            JOptionPane.showMessageDialog(this, "No se pudo registrar el resultado:\n" + repo.getError());
+        }
+    }
 
     private void eliminar() {
         int fila = tabla.getSelectedRow();

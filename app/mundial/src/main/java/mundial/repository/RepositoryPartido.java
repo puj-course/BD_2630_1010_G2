@@ -3,6 +3,7 @@ package mundial.repository;
 import mundial.conexion.Constantes;
 import mundial.modelo.Partido;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -123,6 +124,39 @@ public class RepositoryPartido {
                     System.out.println("Error al cerrar la conexion:" + e.toString());
                 }
             }
+        }
+    }
+
+    // Registra el resultado llamando al procedimiento pr_registrar_resultado (CallableStatement).
+    // El procedimiento si hay un error hace ROLLBACK y lo muestra con DBMS_OUTPUT, entonces desde Java
+    // no llega la excepcion. Por eso despues de llamarlo se revisa si el partido quedo FINALIZADO.
+    public boolean registrarResultado(int idPartido, int golesLocal, int golesVisitante) {
+        try (Connection conex = DriverManager.getConnection(Constantes.THINCONN, Constantes.USERNAME, Constantes.PASSWORD)) {
+            try (CallableStatement cs = conex.prepareCall("{call pr_registrar_resultado(?, ?, ?)}")) {
+                cs.setInt(1, idPartido);
+                cs.setInt(2, golesLocal);
+                cs.setInt(3, golesVisitante);
+                cs.execute();
+            }
+
+            String estado = "";
+            try (PreparedStatement ps = conex.prepareStatement("select estado from partido where id_partido = ?")) {
+                ps.setInt(1, idPartido);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        estado = rs.getString("ESTADO");
+                    }
+                }
+            }
+            if (estado.equals("FINALIZADO")) {
+                return true;
+            }
+            error = "El procedimiento no finalizo el partido. Revise que los goles de las estadisticas de los jugadores coincidan con el marcador.";
+            return false;
+        } catch (SQLException ex) {
+            error = ex.getMessage();
+            System.out.println("Error al registrar resultado:" + ex.toString());
+            return false;
         }
     }
 
