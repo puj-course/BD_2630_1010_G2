@@ -213,3 +213,52 @@ EXCEPTION
 END pr_carga_masiva_resultados;
 /
 
+
+-- BLOQUE B: Actualización de la tabla de posiciones por cada grupo
+
+-- 3. Tabla de posiciones de un grupo 
+-- Muestra las selecciones del grupo ordenada por puntos y diferencia de goles, usando las funciones fn_puntos_seleccion y fn_diferencia_gol
+
+CREATE OR REPLACE PROCEDURE pr_tabla_posiciones
+  (p_id_grupo IN grupo.id_grupo%TYPE)
+AS
+  CURSOR c_posiciones (p_grupo NUMBER) IS
+    SELECT s.id_seleccion, f.pais
+      FROM seleccion s
+      JOIN federacion f ON f.id_federacion = s.id_federacion
+     WHERE s.id_grupo = p_grupo
+     ORDER BY fn_puntos_seleccion (s.id_seleccion) DESC,
+              fn_diferencia_gol (s.id_seleccion) DESC,
+              f.pais;
+
+  v_nombre_grupo  grupo.nombre%TYPE;
+  v_pais  federacion.pais%TYPE;
+  v_puesto  NUMBER := 0;
+  v_id_seleccion  seleccion.id_seleccion%TYPE;
+
+BEGIN
+ -- si el grupo no existe salta NO_DATA_FOUND
+  SELECT nombre
+    INTO v_nombre_grupo
+    FROM grupo
+   WHERE id_grupo = p_id_grupo;
+
+  DBMS_OUTPUT.PUT_LINE('Tabla de posiciones - Grupo ' || v_nombre_grupo);
+
+  OPEN c_posiciones(p_id_grupo);
+  LOOP
+    FETCH c_posiciones INTO v_id_seleccion, v_pais;
+    EXIT WHEN c_posiciones%NOTFOUND;
+    v_puesto := v_puesto + 1;
+    DBMS_OUTPUT.PUT_LINE(v_puesto || '. ' || v_pais || ' - ' || fn_puntos_seleccion(v_id_seleccion) || ' pts - DG '|| fn_diferencia_gol(v_id_seleccion));
+  END LOOP;
+  CLOSE c_posiciones;
+
+  IF v_puesto = 0 THEN
+    DBMS_OUTPUT.PUT_LINE('El grupo no tiene selecciones');
+  END IF;
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+    DBMS_OUTPUT.PUT_LINE('Error: el grupo ' || p_id_grupo || ' no existe');
+END pr_tabla_posiciones;
+/
