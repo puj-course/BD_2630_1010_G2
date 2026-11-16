@@ -13,13 +13,20 @@ Si solo se quiere ver si conecta, corran PruebaConexion, que muestra cuantos par
 
 La clave no se sube al repo porque config.properties esta en el .gitignore, entonces cada uno tiene que crear el suyo.
 
+Para que funcione el boton de Registrar resultado tiene que estar creado en la base el procedimiento pr_registrar_resultado (sql/entrega3/procedimientos/procedimientos.sql).
+
 Como esta organizado:
 
 - conexion: la clase Constantes con los datos para conectarse
-- modelo: las clases de cada tabla (por ahora Estadio)
-- repository: los select, insert, update y delete de cada tabla
+- modelo: las clases de cada tabla y de cada consulta
+- repository: los select, insert, update y delete de cada tabla, las consultas y los reportes
 - vista: las ventanas
 
 Mas detalle en docs/entrega3/arquitectura_aplicacion.md
 
-Ya estan la ventana principal y los 7 catalogos (ediciones, ciudades sede, estadios, selecciones, grupos, jugadores y cuerpo tecnico). Faltan los partidos, las consultas y los reportes.
+Que tiene la aplicacion (menu de la ventana principal):
+
+- Catalogos: ediciones, ciudades sede, estadios, selecciones, grupos, jugadores y cuerpo tecnico
+- Partidos: programar partidos, registrar el resultado y las estadisticas de los jugadores
+- Consultas: tabla de posiciones, resultados consolidados e incidencias
+- Reportes: goleadores, posiciones e incidencias con filtros por fase, grupo y seleccion
