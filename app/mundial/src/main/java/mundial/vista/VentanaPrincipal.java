@@ -69,7 +69,7 @@ public class VentanaPrincipal extends JFrame {
         itemCuerpoTecnico.addActionListener(e -> new VentanaCuerpoTecnico().setVisible(true));
         itemEdiciones.addActionListener(e -> new VentanaEdiciones().setVisible(true));
         itemCiudades.addActionListener(e -> new VentanaCiudades().setVisible(true));
-        itemRegistrar.addActionListener(e -> pendiente());
+        itemRegistrar.addActionListener(e -> new VentanaPartidos().setVisible(true));
         itemPosiciones.addActionListener(e -> pendiente());
         itemResultados.addActionListener(e -> pendiente());
         itemIncidencias.addActionListener(e -> pendiente());
