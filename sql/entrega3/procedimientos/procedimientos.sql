@@ -387,9 +387,12 @@ END pr_cierre_fase;
 SET SERVEROUTPUT ON;
 
 -- 3. Tabla de posiciones
-EXEC pr_tabla_posiciones(1);   -- Grupo A: Colombia 5, Japon 4, Mexico 4, Marruecos 3
-EXEC pr_tabla_posiciones(2);   -- Grupo B: Argentina 7, Espana 5, Francia 2, Estados Unidos 1
-EXEC pr_tabla_posiciones(99);  -- Error: el grupo 99 no existe
+-- Grupo A: Colombia 5, Japon 4, Mexico 4, Marruecos 3
+EXEC pr_tabla_posiciones(1);
+-- Grupo B: Argentina 7, Espana 5, Francia 2, Estados Unidos 1
+EXEC pr_tabla_posiciones(2);
+-- Error: el grupo 99 no existe
+EXEC pr_tabla_posiciones(99);
 
 -- 1. Registrar resultado, con un partido de prueba (Argentina vs Francia en dieciseisavos)
 INSERT INTO partido (id_partido, id_fase, id_estadio, id_grupo, codigo_llave, fecha_hora, estado)
@@ -400,10 +403,14 @@ INSERT INTO participacion_partido (id_participacion, id_partido, id_seleccion, c
 VALUES (28, 14, 8, 'VISITANTE', 0);
 COMMIT;
 
-EXEC pr_registrar_resultado(14, -1, 0); -- Error: los goles no pueden ser negativos
-EXEC pr_registrar_resultado(99, 1, 0);  -- Error: el partido 99 no existe
-EXEC pr_registrar_resultado(14, 2, 1);  -- Resultado registrado: partido 14 (2 - 1)
-EXEC pr_registrar_resultado(14, 3, 0);  -- Error: el partido 14 ya esta finalizado
+-- Error: los goles no pueden ser negativos
+EXEC pr_registrar_resultado(14, -1, 0);
+-- Error: el partido 99 no existe
+EXEC pr_registrar_resultado(99, 1, 0);
+-- Resultado registrado: partido 14 (2 - 1)
+EXEC pr_registrar_resultado(14, 2, 1);
+-- Error: el partido 14 ya esta finalizado
+EXEC pr_registrar_resultado(14, 3, 0);
 
 SELECT condicion, goles_marcados, resultado
   FROM participacion_partido
@@ -417,24 +424,30 @@ INSERT INTO estadistica_jugador_partido VALUES (79, 14, 18, 0, NULL, 1, 0, 0, 'N
 INSERT INTO estadistica_jugador_partido VALUES (80, 14, 24, 0, NULL, 2, 0, 1, 'N');
 COMMIT;
 
-EXEC pr_carga_masiva_resultados(2);  -- Partido 14: 1 - 2 / Cargados: 1, sin estadisticas: 0, con error: 0
+-- Partido 14: 1 - 2 / Cargados: 1, sin estadisticas: 0, con error: 0
+EXEC pr_carga_masiva_resultados(2);
 
 SELECT condicion, goles_marcados, resultado
   FROM participacion_partido
  WHERE id_partido = 14;  -- LOCAL 1 P, VISITANTE 2 G
 
-EXEC pr_carga_masiva_resultados(2);  -- Cargados: 0 (ya no hay partidos en juego)
+-- Cargados: 0 (ya no hay partidos en juego)
+EXEC pr_carga_masiva_resultados(2);
 
 -- se borra el partido de prueba (sus participaciones y estadisticas se borran por el ON DELETE CASCADE)
 DELETE FROM partido WHERE id_partido = 14;
 COMMIT;
 
 -- 4. Cierre de fase
-EXEC pr_cierre_fase(99);  -- Error: la fase 99 no existe
-EXEC pr_cierre_fase(2);   -- Error: solo se puede cerrar la fase de grupos
-EXEC pr_cierre_fase(1);   -- Grupo A: el cruce ya estaba programado (Colombia vs Espana)
-                          -- Grupo B: se programo el partido 14 (Argentina vs Japon) / Partidos nuevos: 1
-EXEC pr_cierre_fase(1);   -- Otra vez: los dos cruces ya estaban programados / Partidos nuevos: 0
+-- Error: la fase 99 no existe
+EXEC pr_cierre_fase(99);
+-- Error: solo se puede cerrar la fase de grupos
+EXEC pr_cierre_fase(2);
+-- Grupo A: el cruce ya estaba programado (Colombia vs Espana)
+-- Grupo B: se programo el partido 14 (Argentina vs Japon) / Partidos nuevos: 1
+EXEC pr_cierre_fase(1);
+-- Otra vez: los dos cruces ya estaban programados / Partidos nuevos: 0
+EXEC pr_cierre_fase(1);
 
 SELECT p.id_partido, p.estado, f.pais, pp.condicion
   FROM partido p
