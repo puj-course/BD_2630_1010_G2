@@ -85,15 +85,33 @@ Por ejemplo, EXEC pr_registrar_resultado(14, 2, 1) registra que el partido 14 te
 
 # pr_carga_masiva_resultados
 
-(Pendiente: se completa cuando el procedimiento este terminado.)
+Sirve para cerrar de una vez todos los partidos de una fase que ya se jugaron pero no tienen resultado oficial.
+
+Recibe p_id_fase (id de la fase).
+
+Recorre con un cursor los partidos de la fase que estan EN_JUEGO. Para cada uno suma los goles de las estadisticas de los jugadores de cada seleccion, con eso pone el marcador y el resultado (G, E o P) y deja el partido FINALIZADO. Los partidos sin estadisticas no se cargan. Cada partido tiene su SAVEPOINT, entonces si uno falla solo se deshace ese y los demas siguen. Al final hace COMMIT y muestra cuantos se cargaron.
+
+Por ejemplo, EXEC pr_carga_masiva_resultados(2) cierra los partidos en juego de dieciseisavos.
 
 # pr_tabla_posiciones
 
-(Pendiente: se completa cuando el procedimiento este terminado.)
+Sirve para ver la tabla de posiciones de un grupo.
+
+Recibe p_id_grupo (id del grupo).
+
+Recorre con un cursor las selecciones del grupo ordenadas por puntos y diferencia de gol, usando fn_puntos_seleccion y fn_diferencia_gol, y muestra el puesto, los puntos y la diferencia de gol de cada una. Como usa las funciones, siempre sale actualizada con los resultados que haya. Si el grupo no existe muestra un error.
+
+Por ejemplo, EXEC pr_tabla_posiciones(1) muestra el grupo A: Colombia 5 pts, Japon 4, Mexico 4 y Marruecos 3.
 
 # pr_cierre_fase
 
-(Pendiente: se completa cuando el procedimiento este terminado.)
+Sirve para cerrar la fase de grupos y hacer avanzar a los clasificados.
+
+Recibe p_id_fase (id de la fase).
+
+Revisa que sea la fase de grupos y que todos sus partidos esten FINALIZADO. Despues, por cada grupo, toma al primero y al segundo del grupo pareja (A con B, C con D...) y programa el partido de la siguiente fase (1A vs 2B, 1B vs 2A). Si ese cruce ya existe no lo duplica. Al final hace COMMIT y muestra cuantos partidos creo.
+
+Por ejemplo, EXEC pr_cierre_fase(1) programa Argentina vs Japon en dieciseisavos (Colombia vs Espana ya estaba).
 
 
 3. Triggers
