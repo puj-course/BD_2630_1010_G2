@@ -63,14 +63,14 @@ public class VentanaPrincipal extends JFrame {
 
         // lo que ya esta hecho
         itemEstadios.addActionListener(e -> new VentanaEstadios().setVisible(true));
+        itemSelecciones.addActionListener(e -> new VentanaSelecciones().setVisible(true));
+        itemGrupos.addActionListener(e -> new VentanaGrupos().setVisible(true));
+        itemJugadores.addActionListener(e -> new VentanaJugadores().setVisible(true));
+        itemCuerpoTecnico.addActionListener(e -> new VentanaCuerpoTecnico().setVisible(true));
 
         // lo que falta, por ahora muestra un aviso
         itemEdiciones.addActionListener(e -> pendiente());
         itemCiudades.addActionListener(e -> pendiente());
-        itemSelecciones.addActionListener(e -> pendiente());
-        itemGrupos.addActionListener(e -> pendiente());
-        itemJugadores.addActionListener(e -> pendiente());
-        itemCuerpoTecnico.addActionListener(e -> pendiente());
         itemRegistrar.addActionListener(e -> pendiente());
         itemPosiciones.addActionListener(e -> pendiente());
         itemResultados.addActionListener(e -> pendiente());

@@ -74,4 +74,4 @@ classDiagram
 
 4. Lo que falta
 
-En esta semana se hacen los otros catalogos (ediciones, ciudades sede, selecciones, grupos, jugadores y cuerpo tecnico). En la semana 3 van el registro de partidos y estadisticas usando pr_registrar_resultado, las consultas y los reportes.
+Ya estan hechos los catalogos de estadios, selecciones, grupos, jugadores y cuerpo tecnico, todos con la misma estructura. Faltan ediciones y ciudades sede. En la semana 3 van el registro de partidos y estadisticas usando pr_registrar_resultado, las consultas y los reportes.
