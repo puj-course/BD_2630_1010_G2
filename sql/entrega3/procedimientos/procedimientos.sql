@@ -5,7 +5,7 @@ SET SERVEROUTPUT ON;
 -- BLOQUE A: Carga masiva controlada de resultados de partidos 
 
 -- 1. Registrar el resultado de un partido 
--- Recibe el partido y los goles tamto del local como del visitante
+-- Recibe el partido y los goles tanto del local como del visitante
 -- Valida los datos y calcula quien gano (G/E/P) y deja el estado en FINALIZADO
 -- Si algo falla hace ROLLBACK
 
@@ -86,7 +86,7 @@ EXCEPTION
   WHEN e_partido_finalizado THEN
     ROLLBACK;
     DBMS_OUTPUT.PUT_LINE('Error: el partido ' || p_id_partido || ' ya esta finalizado.');
-  WHEN e_sin_participaciones THEN
+  WHEN e_sin_participacion THEN
     ROLLBACK;
     DBMS_OUTPUT.PUT_LINE('Error: el partido ' || p_id_partido || ' no tiene local y visitante registrados.');
   WHEN NO_DATA_FOUND THEN
@@ -111,7 +111,7 @@ AS
     SELECT id_partido
       FROM partido
      WHERE id_fase = p_fase
-       AND estado IN ('PROGRAMADO', 'EN_JUEGO')
+       AND estado = 'EN_JUEGO'
      ORDER BY fecha_hora;
 
   v_id_partido      partido.id_partido%TYPE;
