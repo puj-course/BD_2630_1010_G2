@@ -264,12 +264,11 @@ END pr_tabla_posiciones;
 /
 
 
-
 -- BLOQUE C: Cierre de fase
 
--- 4. Cierre de fase
--- Solo deja cerrar la fase si todos sus partidos estan FINALIZADO.
--- Si es la fase de grupos muestra los 2 primeros de cada grupo, si es de eliminacion muestra los ganadores.
+-- 4. Cierre de la fase de grupos (avance automatico de los clasificados)
+-- Si todos los partidos de grupos estan FINALIZADO, pasan los 2 primeros de cada grupo
+-- y se programan los partidos de la siguiente fase: 1A vs 2B, 1B vs 2A (y asi con C-D, E-F...)
 
 CREATE OR REPLACE PROCEDURE pr_cierre_fase
   (p_id_fase IN fase.id_fase%TYPE)
@@ -280,89 +279,171 @@ AS
      WHERE id_fase = p_fase
      ORDER BY nombre;
 
-  CURSOR c_clasificados (p_grupo NUMBER) IS
-    SELECT f.pais
-      FROM seleccion s
-      JOIN federacion f ON f.id_federacion = s.id_federacion
-     WHERE s.id_grupo = p_grupo
-     ORDER BY fn_puntos_seleccion(s.id_seleccion) DESC,
-              fn_diferencia_gol(s.id_seleccion) DESC,
-              f.pais;
-
-  CURSOR c_ganadores (p_fase NUMBER) IS
-    SELECT f.pais
-      FROM participacion_partido pp
-      JOIN partido p ON p.id_partido = pp.id_partido
-      JOIN seleccion s ON s.id_seleccion = pp.id_seleccion
-      JOIN federacion f ON f.id_federacion = s.id_federacion
-     WHERE p.id_fase = p_fase
-       AND pp.resultado = 'G'
-     ORDER BY p.fecha_hora;
-
   v_nombre_fase   fase.nombre%TYPE;
+  v_siguiente     fase.id_fase%TYPE;
   v_pendientes    NUMBER;
   v_id_grupo      grupo.id_grupo%TYPE;
   v_nombre_grupo  grupo.nombre%TYPE;
-  v_pais          federacion.pais%TYPE;
-  v_contador      NUMBER;
+  v_primero       seleccion.id_seleccion%TYPE;
+  v_segundo       seleccion.id_seleccion%TYPE;
+  v_ya_tiene      NUMBER;
+  v_id_partido    partido.id_partido%TYPE;
+  v_fecha         partido.fecha_hora%TYPE;
+  v_creados       NUMBER := 0;
   e_partidos_pendientes EXCEPTION;
-
+  e_no_es_grupos  EXCEPTION;
 BEGIN
-  -- si la fase no existe salta NO_DATA_FOUND
-  SELECT nombre
-    INTO v_nombre_fase
-    FROM fase
-   WHERE id_fase = p_id_fase;
+  SELECT nombre INTO v_nombre_fase FROM fase WHERE id_fase = p_id_fase;
 
-  -- cuantos partidos de la fase no estan finalizados
-  SELECT COUNT(*)
-    INTO v_pendientes
+  IF v_nombre_fase <> 'GRUPOS' THEN
+    RAISE e_no_es_grupos;
+  END IF;
+
+  SELECT COUNT(*) INTO v_pendientes
     FROM partido
-   WHERE id_fase = p_id_fase
-     AND estado <> 'FINALIZADO';
+   WHERE id_fase = p_id_fase AND estado <> 'FINALIZADO';
 
   IF v_pendientes > 0 THEN
     RAISE e_partidos_pendientes;
   END IF;
 
-  DBMS_OUTPUT.PUT_LINE('Cierre de la fase ' || v_nombre_fase);
+  -- la siguiente fase es la de orden + 1
+  SELECT f2.id_fase INTO v_siguiente
+    FROM fase f1 JOIN fase f2 ON f2.id_edicion = f1.id_edicion AND f2.orden = f1.orden + 1
+   WHERE f1.id_fase = p_id_fase;
 
-  IF v_nombre_fase = 'GRUPOS' THEN
-    -- por cada grupo se muestran los 2 primeros
-    OPEN c_grupos(p_id_fase);
-    LOOP
-      FETCH c_grupos INTO v_id_grupo, v_nombre_grupo;
-      EXIT WHEN c_grupos%NOTFOUND;
-      DBMS_OUTPUT.PUT_LINE('Grupo ' || v_nombre_grupo || ' - clasificados:');
+  -- los partidos nuevos van despues del ultimo partido que haya
+  SELECT MAX(fecha_hora) INTO v_fecha FROM partido;
 
-      v_contador := 0;
-      OPEN c_clasificados(v_id_grupo);
-      LOOP
-        FETCH c_clasificados INTO v_pais;
-        EXIT WHEN c_clasificados%NOTFOUND OR v_contador = 2;
-        v_contador := v_contador + 1;
-        DBMS_OUTPUT.PUT_LINE('  ' || v_contador || '. ' || v_pais);
-      END LOOP;
-      CLOSE c_clasificados;
-    END LOOP;
-    CLOSE c_grupos;
-  ELSE
-    -- en eliminacion pasan los que ganaron su partido
-    DBMS_OUTPUT.PUT_LINE('Pasan a la siguiente fase:');
-    OPEN c_ganadores(p_id_fase);
-    LOOP
-      FETCH c_ganadores INTO v_pais;
-      EXIT WHEN c_ganadores%NOTFOUND;
-      DBMS_OUTPUT.PUT_LINE('  ' || v_pais);
-    END LOOP;
-    CLOSE c_ganadores;
-  END IF;
-  
+  OPEN c_grupos(p_id_fase);
+  LOOP
+    FETCH c_grupos INTO v_id_grupo, v_nombre_grupo;
+    EXIT WHEN c_grupos%NOTFOUND;
+
+    -- primero de este grupo
+    SELECT s.id_seleccion INTO v_primero
+      FROM seleccion s
+     WHERE s.id_grupo = v_id_grupo
+     ORDER BY fn_puntos_seleccion(s.id_seleccion) DESC, fn_diferencia_gol(s.id_seleccion) DESC
+     FETCH FIRST 1 ROWS ONLY;
+
+    -- segundo del grupo pareja (A con B, C con D...)
+    SELECT s.id_seleccion INTO v_segundo
+      FROM seleccion s
+      JOIN grupo g ON g.id_grupo = s.id_grupo
+     WHERE g.id_fase = p_id_fase
+       AND g.nombre = CASE WHEN MOD(ASCII(v_nombre_grupo) - 65, 2) = 0
+                           THEN CHR(ASCII(v_nombre_grupo) + 1)
+                           ELSE CHR(ASCII(v_nombre_grupo) - 1) END
+     ORDER BY fn_puntos_seleccion(s.id_seleccion) DESC, fn_diferencia_gol(s.id_seleccion) DESC
+     OFFSET 1 ROWS FETCH NEXT 1 ROWS ONLY;
+
+    -- si el primero ya tiene partido en la siguiente fase no se crea otro
+    SELECT COUNT(*) INTO v_ya_tiene
+      FROM participacion_partido pp
+      JOIN partido p ON p.id_partido = pp.id_partido
+     WHERE p.id_fase = v_siguiente AND pp.id_seleccion = v_primero;
+
+    IF v_ya_tiene = 0 THEN
+      v_fecha := v_fecha + 1;
+      SELECT NVL(MAX(id_partido), 0) + 1 INTO v_id_partido FROM partido;
+
+      INSERT INTO partido (id_partido, id_fase, id_estadio, fecha_hora, estado)
+      VALUES (v_id_partido, v_siguiente, 1, v_fecha, 'PROGRAMADO');
+
+      INSERT INTO participacion_partido (id_participacion, id_partido, id_seleccion, condicion, goles_marcados)
+      VALUES ((SELECT NVL(MAX(id_participacion), 0) + 1 FROM participacion_partido), v_id_partido, v_primero, 'LOCAL', 0);
+
+      INSERT INTO participacion_partido (id_participacion, id_partido, id_seleccion, condicion, goles_marcados)
+      VALUES ((SELECT NVL(MAX(id_participacion), 0) + 1 FROM participacion_partido), v_id_partido, v_segundo, 'VISITANTE', 0);
+
+      v_creados := v_creados + 1;
+      DBMS_OUTPUT.PUT_LINE('Grupo ' || v_nombre_grupo || ': se programo el partido ' || v_id_partido);
+    ELSE
+      DBMS_OUTPUT.PUT_LINE('Grupo ' || v_nombre_grupo || ': el cruce ya estaba programado');
+    END IF;
+  END LOOP;
+  CLOSE c_grupos;
+
+  COMMIT;
+  DBMS_OUTPUT.PUT_LINE('Fase cerrada. Partidos nuevos: ' || v_creados);
 EXCEPTION
   WHEN NO_DATA_FOUND THEN
+    ROLLBACK;
     DBMS_OUTPUT.PUT_LINE('Error: la fase ' || p_id_fase || ' no existe');
+  WHEN e_no_es_grupos THEN
+    DBMS_OUTPUT.PUT_LINE('Error: solo se puede cerrar la fase de grupos');
   WHEN e_partidos_pendientes THEN
-    DBMS_OUTPUT.PUT_LINE('Error: la fase no se puede cerrar, tiene ' || v_pendientes|| ' partido(s) sin finalizar');
-
+    DBMS_OUTPUT.PUT_LINE('Error: faltan ' || v_pendientes || ' partido(s) por finalizar');
+  WHEN OTHERS THEN
+    ROLLBACK;
+    DBMS_OUTPUT.PUT_LINE('Error al cerrar la fase: ' || SQLERRM);
 END pr_cierre_fase;
 /
+
+
+-- PRUEBAS (con los datos de ejemplo de carga_datos_prueba.sql)
+
+SET SERVEROUTPUT ON;
+
+-- 3. Tabla de posiciones
+EXEC pr_tabla_posiciones(1);   -- Grupo A: Colombia 5, Japon 4, Mexico 4, Marruecos 3
+EXEC pr_tabla_posiciones(2);   -- Grupo B: Argentina 7, Espana 5, Francia 2, Estados Unidos 1
+EXEC pr_tabla_posiciones(99);  -- Error: el grupo 99 no existe
+
+-- 1. Registrar resultado, con un partido de prueba (Argentina vs Francia en dieciseisavos)
+INSERT INTO partido (id_partido, id_fase, id_estadio, id_grupo, codigo_llave, fecha_hora, estado)
+VALUES (14, 2, 2, NULL, 'D2', TO_DATE('2026-07-01 18:00','YYYY-MM-DD HH24:MI'), 'PROGRAMADO');
+INSERT INTO participacion_partido (id_participacion, id_partido, id_seleccion, condicion, goles_marcados)
+VALUES (27, 14, 6, 'LOCAL', 0);
+INSERT INTO participacion_partido (id_participacion, id_partido, id_seleccion, condicion, goles_marcados)
+VALUES (28, 14, 8, 'VISITANTE', 0);
+COMMIT;
+
+EXEC pr_registrar_resultado(14, -1, 0); -- Error: los goles no pueden ser negativos
+EXEC pr_registrar_resultado(99, 1, 0);  -- Error: el partido 99 no existe
+EXEC pr_registrar_resultado(14, 2, 1);  -- Resultado registrado: partido 14 (2 - 1)
+EXEC pr_registrar_resultado(14, 3, 0);  -- Error: el partido 14 ya esta finalizado
+
+SELECT condicion, goles_marcados, resultado
+  FROM participacion_partido
+ WHERE id_partido = 14;  -- LOCAL 2 G, VISITANTE 1 P
+
+-- 2. Carga masiva: el partido 14 se pone EN_JUEGO (ya se jugo) y se le cargan las estadisticas
+-- (Argentina 1 gol con la convocatoria 18, Francia 2 goles con la 24)
+UPDATE partido SET estado = 'EN_JUEGO' WHERE id_partido = 14;
+UPDATE participacion_partido SET goles_marcados = 0, resultado = NULL WHERE id_partido = 14;
+INSERT INTO estadistica_jugador_partido VALUES (79, 14, 18, 0, NULL, 1, 0, 0, 'N');
+INSERT INTO estadistica_jugador_partido VALUES (80, 14, 24, 0, NULL, 2, 0, 1, 'N');
+COMMIT;
+
+EXEC pr_carga_masiva_resultados(2);  -- Partido 14: 1 - 2 / Cargados: 1, sin estadisticas: 0, con error: 0
+
+SELECT condicion, goles_marcados, resultado
+  FROM participacion_partido
+ WHERE id_partido = 14;  -- LOCAL 1 P, VISITANTE 2 G
+
+EXEC pr_carga_masiva_resultados(2);  -- Cargados: 0 (ya no hay partidos en juego)
+
+-- se borra el partido de prueba (sus participaciones y estadisticas se borran por el ON DELETE CASCADE)
+DELETE FROM partido WHERE id_partido = 14;
+COMMIT;
+
+-- 4. Cierre de fase
+EXEC pr_cierre_fase(99);  -- Error: la fase 99 no existe
+EXEC pr_cierre_fase(2);   -- Error: solo se puede cerrar la fase de grupos
+EXEC pr_cierre_fase(1);   -- Grupo A: el cruce ya estaba programado (Colombia vs Espana)
+                          -- Grupo B: se programo el partido 14 (Argentina vs Japon) / Partidos nuevos: 1
+EXEC pr_cierre_fase(1);   -- Otra vez: los dos cruces ya estaban programados / Partidos nuevos: 0
+
+SELECT p.id_partido, p.estado, f.pais, pp.condicion
+  FROM partido p
+  JOIN participacion_partido pp ON pp.id_partido = p.id_partido
+  JOIN seleccion s ON s.id_seleccion = pp.id_seleccion
+  JOIN federacion f ON f.id_federacion = s.id_federacion
+ WHERE p.id_fase = 2
+ ORDER BY p.id_partido, pp.condicion;  -- partido 13 Colombia-Espana y partido 14 Argentina-Japon
+
+-- se borra el partido que creo el cierre para dejar los datos como estaban
+DELETE FROM partido WHERE id_fase = 2 AND id_partido > 13;
+COMMIT;
