@@ -22,4 +22,4 @@ Como esta organizado:
 
 Mas detalle en docs/entrega3/arquitectura_aplicacion.md
 
-Por ahora esta la ventana principal con el menu y el catalogo de estadios. Faltan los demas catalogos, los partidos, las consultas y los reportes.
+Ya estan la ventana principal y los catalogos de estadios, selecciones, grupos, jugadores y cuerpo tecnico. Faltan ediciones y ciudades sede, los partidos, las consultas y los reportes.
