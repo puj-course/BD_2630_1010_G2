@@ -58,3 +58,15 @@ Esperado: los 6 jugadores con sus goles y asistencias. Los goles tienen que cuad
 Obtenido: salieron los 6 jugadores, Andres Castillo con 1 gol por Mexico y Juan Pablo Cardenas con 1 gol por Colombia.
 
 ![Estadisticas Mexico vs Colombia](img/estadisticas_mexico_colombia.png)
+
+
+
+6. Registrar el resultado de un partido
+
+En Partidos programamos un partido nuevo (Argentina vs Francia, fase 2, estadio 2, 2026-07-04 18:00), lo seleccionamos y le dimos Registrar resultado con 2 - 2.
+
+Esperado: la app llama al procedimiento pr_registrar_resultado y el partido queda FINALIZADO con ese marcador.
+
+Obtenido: salio "Resultado registrado: Argentina 2 - 2 Francia" y en la tabla el partido quedo FINALIZADO 2 - 2. Despues lo borramos para dejar los datos como estaban.
+
+![Registrar resultado](img/registrar_resultado_app.png)
