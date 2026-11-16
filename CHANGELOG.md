@@ -363,6 +363,7 @@
 
 ### Tareas realizadas
 
+* Procedimientos (Pablo Marcos, rama feature/procedimientos): se terminaron pr_registrar_resultado, pr_carga_masiva_resultados, pr_tabla_posiciones y pr_cierre_fase (que programa los cruces de la siguiente fase), con sus pruebas y su documentacion. Manuel Garcés los probo en la base y dejo la evidencia en tests/entrega3/pruebas_procedimientos.md.
 * Partidos y estadisticas (Manuel Garcés, rama feature/app-partidos): ventana para programar partidos (en una transaccion con commit y rollback), registrar el resultado llamando a pr_registrar_resultado y cargar las estadisticas de cada jugador.
 * Consultas (Manuel Garcés, rama feature/app-partidos): tabla de posiciones por grupo, resultados consolidados e incidencias.
 * Reportes (Manuel Garcés, rama feature/app-partidos): panel con filtros por fase, grupo y seleccion con goleadores, posiciones, incidencias e indicadores.
@@ -377,4 +378,4 @@
 
 * El procedimiento pr_registrar_resultado muestra los errores con DBMS_OUTPUT y no los manda a Java, entonces la aplicacion revisa despues si el partido quedo FINALIZADO para saber si funciono.
 * La funcion fn_puesto_goleador cuenta tambien las estadisticas de partidos que no estan finalizados, entonces una prueba con un partido programado cambio el ranking. Se borro el partido de prueba.
-
+* En las pruebas de los procedimientos el comentario estaba en la misma linea del EXEC y SQL Developer lo tomaba como parte del bloque. Se pasaron los comentarios a la linea de arriba.
