@@ -177,12 +177,13 @@ Semana 1
 - documentacion_programacion_bd.md: en progreso
 
 Semana 2
-- Aplicacion (conexion a la base y catalogos): pendiente
-- arquitectura_aplicacion.md: pendiente
+- Aplicacion (conexion a la base, ventana principal y los 7 catalogos): terminado
+- arquitectura_aplicacion.md: terminado
 
 Semana 3
-- Aplicacion (partidos, estadisticas y consultas): pendiente
-- Reportes y reportes.md: pendiente
+- Aplicacion (partidos, estadisticas, tabla de posiciones, resultados e incidencias): terminado
+- Reportes con filtros y reportes.md: terminado
+- pruebas_app.md: terminado
 
 Este avance se actualiza cada semana.
 

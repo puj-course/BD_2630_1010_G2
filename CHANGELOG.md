@@ -325,3 +325,56 @@
 * La tabla PARTIDO no se podia borrar porque habia una tabla PARTIDO de un taller anterior con una llave foranea apuntando a ella. Se borro con DROP TABLE partido CASCADE CONSTRAINTS y se volvio a crear la del proyecto.
 * La rama feature/procedimientos se creo desde una version vieja de main y no tenia funciones.sql. Se arreglo con Update from main.
 * Los roles los habia creado otro usuario, asi que al correr de nuevo roles_privilegios.sql salio ORA-01924 al asignarlos. Los permisos sobre las tablas si se volvieron a dar bien.
+
+
+## Semana 2
+
+### Objetivos de la semana
+
+* Empezar la aplicacion y conectarla a la base.
+* Hacer los catalogos que pide el enunciado.
+* Documentar la arquitectura de la aplicacion.
+
+### Tareas realizadas
+
+* Base de la aplicacion (Manuel Garcés, rama feature/app-base): se creo el proyecto Maven en app/mundial con el driver de Oracle, la clase Constantes para la conexion (la clave se lee de config.properties para no subirla), la ventana principal con el menu y el catalogo de estadios como ejemplo.
+* Catalogos de selecciones, grupos, jugadores y cuerpo tecnico (Manuel Garcés, rama feature/app-catalogos-selecciones).
+* Catalogos de ediciones y ciudades sede (Manuel Garcés, rama feature/app-catalogos-sedes).
+* Documentacion (Manuel Garcés): se hizo app/mundial/README.md con los pasos para correr la aplicacion y docs/entrega3/arquitectura_aplicacion.md con los paquetes, la conexion y los diagramas.
+
+### Cambios principales
+
+* Se creo la carpeta app/mundial con los paquetes conexion, modelo, repository y vista, siguiendo el patron DAO de la clase de JDBC.
+* La aplicacion tiene los 7 catalogos con agregar, modificar y eliminar.
+
+### Problemas encontrados
+
+* El proyecto de IntelliJ se creo primero por fuera de la carpeta del repo y hubo que volver a crearlo dentro de app.
+* Una rama se creo desde un main desactualizado y aparecian archivos de .idea y el config.properties. Se borro la rama, se actualizo main y se volvio a crear.
+* Hubo un conflicto en VentanaPrincipal porque se cambio en dos ramas. Se dejo una sola version con todo el menu.
+
+
+## Semana 3
+
+### Objetivos de la semana
+
+* Terminar la aplicacion: registro de partidos y estadisticas, consultas y reportes.
+* Documentar los reportes y probar la aplicacion.
+
+### Tareas realizadas
+
+* Partidos y estadisticas (Manuel Garcés, rama feature/app-partidos): ventana para programar partidos (en una transaccion con commit y rollback), registrar el resultado llamando a pr_registrar_resultado y cargar las estadisticas de cada jugador.
+* Consultas (Manuel Garcés, rama feature/app-partidos): tabla de posiciones por grupo, resultados consolidados e incidencias.
+* Reportes (Manuel Garcés, rama feature/app-partidos): panel con filtros por fase, grupo y seleccion con goleadores, posiciones, incidencias e indicadores.
+* Documentacion y pruebas (Manuel Garcés, rama feature/documentacion-semana3): docs/entrega3/reportes.md, tests/entrega3/pruebas_app.md y se actualizaron arquitectura_aplicacion.md, los README y este CHANGELOG.
+
+### Cambios principales
+
+* El menu de la aplicacion quedo completo: catalogos, partidos, consultas y reportes.
+* Los reportes arman el where con StringBuilder solo con los filtros escogidos.
+
+### Problemas encontrados
+
+* El procedimiento pr_registrar_resultado muestra los errores con DBMS_OUTPUT y no los manda a Java, entonces la aplicacion revisa despues si el partido quedo FINALIZADO para saber si funciono.
+* La funcion fn_puesto_goleador cuenta tambien las estadisticas de partidos que no estan finalizados, entonces una prueba con un partido programado cambio el ranking. Se borro el partido de prueba.
+
