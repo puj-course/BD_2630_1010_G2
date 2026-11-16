@@ -290,3 +290,91 @@
 
 * Los casos de prueba estaban en la carpeta tests y no en tests/entrega2, así que hubo que moverlos.
 * Había nombres de índices escritos diferente en el modelo físico y en el DDL.
+
+--
+
+
+# Entrega 3
+
+## Semana 1 (9 - 15 noviembre)
+
+### Objetivos de la semana
+
+* Hacer las funciones, procedimientos y triggers que pide el enunciado (seccion 8.3.1).
+* Probar que los triggers funcionan y dejar la evidencia.
+* Documentar la programacion en base de datos.
+
+### Tareas realizadas
+
+* Funciones (Pablo Marcos, rama feature/funciones): se hicieron las funciones de diferencia de gol, puntos por seleccion, goles de un jugador por edicion, puesto en el ranking de goleadores y cupo disponible de convocatoria.
+* Procedimientos (Pablo Marcos, rama feature/procedimientos): se empezo con el procedimiento para registrar el resultado de un partido de forma controlada. Faltan la carga masiva, la tabla de posiciones y el cierre de fase.
+* Triggers (Manuel Garcés, rama feature/trigger): se hicieron los triggers de auditoria de partidos y estadisticas, validacion de rangos, anti-duplicidad y consistencia del marcador.
+* Pruebas de los triggers (Manuel Garcés, rama feature/trigger): se hicieron 9 pruebas con el comando, lo que se esperaba, lo que salio y una captura de cada una en tests/entrega3/pruebas_triggers.md.
+* Documentacion de la programacion (Manuel Garcés, rama feature/documentacion-bd): se explico para que sirve, que recibe y que hace cada funcion, procedimiento y trigger en docs/entrega3/documentacion_programacion_bd.md.
+* Avance en el README (Manuel Garcés, rama feature/documentacion-bd): se agrego una seccion con el avance de la Entrega 3.
+
+### Cambios principales
+
+* Se creo la carpeta sql/entrega3 con funciones, procedimientos y triggers.
+* Se agregaron 6 triggers que cubren los 4 obligatorios del enunciado.
+* Se crearon tests/entrega3/pruebas_triggers.md y docs/entrega3/documentacion_programacion_bd.md.
+
+### Problemas encontrados
+
+* En la base faltaban tres tablas (convocatoria_jugador, cuerpo_tecnico y estadistica_jugador_partido) porque se habian creado con la version del DDL que tenia el parentesis sin cerrar. Hubo que volver a correr el DDL corregido y la carga de datos.
+* La tabla PARTIDO no se podia borrar porque habia una tabla PARTIDO de un taller anterior con una llave foranea apuntando a ella. Se borro con DROP TABLE partido CASCADE CONSTRAINTS y se volvio a crear la del proyecto.
+* La rama feature/procedimientos se creo desde una version vieja de main y no tenia funciones.sql. Se arreglo con Update from main.
+* Los roles los habia creado otro usuario, asi que al correr de nuevo roles_privilegios.sql salio ORA-01924 al asignarlos. Los permisos sobre las tablas si se volvieron a dar bien.
+
+
+## Semana 2
+
+### Objetivos de la semana
+
+* Empezar la aplicacion y conectarla a la base.
+* Hacer los catalogos que pide el enunciado.
+* Documentar la arquitectura de la aplicacion.
+
+### Tareas realizadas
+
+* Base de la aplicacion (Manuel Garcés, rama feature/app-base): se creo el proyecto Maven en app/mundial con el driver de Oracle, la clase Constantes para la conexion (la clave se lee de config.properties para no subirla), la ventana principal con el menu y el catalogo de estadios como ejemplo.
+* Catalogos de selecciones, grupos, jugadores y cuerpo tecnico (Manuel Garcés, rama feature/app-catalogos-selecciones).
+* Catalogos de ediciones y ciudades sede (Manuel Garcés, rama feature/app-catalogos-sedes).
+* Documentacion (Manuel Garcés): se hizo app/mundial/README.md con los pasos para correr la aplicacion y docs/entrega3/arquitectura_aplicacion.md con los paquetes, la conexion y los diagramas.
+
+### Cambios principales
+
+* Se creo la carpeta app/mundial con los paquetes conexion, modelo, repository y vista, siguiendo el patron DAO de la clase de JDBC.
+* La aplicacion tiene los 7 catalogos con agregar, modificar y eliminar.
+
+### Problemas encontrados
+
+* El proyecto de IntelliJ se creo primero por fuera de la carpeta del repo y hubo que volver a crearlo dentro de app.
+* Una rama se creo desde un main desactualizado y aparecian archivos de .idea y el config.properties. Se borro la rama, se actualizo main y se volvio a crear.
+* Hubo un conflicto en VentanaPrincipal porque se cambio en dos ramas. Se dejo una sola version con todo el menu.
+
+
+## Semana 3
+
+### Objetivos de la semana
+
+* Terminar la aplicacion: registro de partidos y estadisticas, consultas y reportes.
+* Documentar los reportes y probar la aplicacion.
+
+### Tareas realizadas
+
+* Partidos y estadisticas (Manuel Garcés, rama feature/app-partidos): ventana para programar partidos (en una transaccion con commit y rollback), registrar el resultado llamando a pr_registrar_resultado y cargar las estadisticas de cada jugador.
+* Consultas (Manuel Garcés, rama feature/app-partidos): tabla de posiciones por grupo, resultados consolidados e incidencias.
+* Reportes (Manuel Garcés, rama feature/app-partidos): panel con filtros por fase, grupo y seleccion con goleadores, posiciones, incidencias e indicadores.
+* Documentacion y pruebas (Manuel Garcés, rama feature/documentacion-semana3): docs/entrega3/reportes.md, tests/entrega3/pruebas_app.md y se actualizaron arquitectura_aplicacion.md, los README y este CHANGELOG.
+
+### Cambios principales
+
+* El menu de la aplicacion quedo completo: catalogos, partidos, consultas y reportes.
+* Los reportes arman el where con StringBuilder solo con los filtros escogidos.
+
+### Problemas encontrados
+
+* El procedimiento pr_registrar_resultado muestra los errores con DBMS_OUTPUT y no los manda a Java, entonces la aplicacion revisa despues si el partido quedo FINALIZADO para saber si funciono.
+* La funcion fn_puesto_goleador cuenta tambien las estadisticas de partidos que no estan finalizados, entonces una prueba con un partido programado cambio el ranking. Se borro el partido de prueba.
+
