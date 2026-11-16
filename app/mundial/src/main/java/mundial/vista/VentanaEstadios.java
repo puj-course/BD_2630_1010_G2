@@ -91,14 +91,16 @@ public class VentanaEstadios extends JFrame {
         }
     }
 
-    // arma un Estadio con lo que hay en el formulario, o null si algo esta mal
     private Estadio leerFormulario() {
         if (txtIdCiudad.getText().isEmpty() || txtNombre.getText().isEmpty() || txtCapacidad.getText().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Llene todos los campos");
             return null;
         }
         try {
-            int id = txtId.getText().isEmpty() ? 0 : Integer.parseInt(txtId.getText());
+            int id = 0;
+            if (!txtId.getText().isEmpty()) {
+                id = Integer.parseInt(txtId.getText());
+            }
             int idCiudad = Integer.parseInt(txtIdCiudad.getText());
             int capacidad = Integer.parseInt(txtCapacidad.getText());
             return new Estadio(id, idCiudad, txtNombre.getText(), capacidad);

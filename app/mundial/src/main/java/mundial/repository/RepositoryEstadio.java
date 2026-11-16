@@ -14,7 +14,6 @@ import java.util.List;
 // Consultas, inserciones, cambios y borrados de la tabla ESTADIO
 public class RepositoryEstadio {
 
-    // aqui se guarda el mensaje del ultimo error para mostrarlo en la ventana
     private String error = "";
 
     public String getError() {
