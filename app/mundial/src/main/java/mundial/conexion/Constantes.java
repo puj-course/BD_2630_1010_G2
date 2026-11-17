@@ -4,8 +4,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-// Datos para conectarse a la base de datos Oracle
-// La clave se lee de config.properties para no dejarla en el codigo
 public class Constantes {
 
     public static final String THINCONN = "jdbc:oracle:thin:@//orion.javeriana.edu.co:1521/LAB";

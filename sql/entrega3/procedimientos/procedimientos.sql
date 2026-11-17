@@ -102,6 +102,7 @@ END pr_registrar_resultado;
 -- 2. Carga masiva controlada de resultados 
 -- Cierra los partidos de la fase que aun no tienen resultado oficial (EN_JUEGO),
 -- usando como marcador la suma de los goles que ya se cargaron en las estadisticas de los jugadores
+-- Solo toma los que empezaron hace mas de 3 horas, para no cerrar uno que se este jugando
 -- Cada partido tiene su SAVEPOINT, si uno falla solo se deshace ese y sigue con los demas
 
 CREATE OR REPLACE PROCEDURE pr_carga_masiva_resultados
@@ -112,6 +113,7 @@ AS
       FROM partido
      WHERE id_fase = p_fase
        AND estado = 'EN_JUEGO'
+       AND fecha_hora <= SYSDATE - 3/24  -- ya paso el tiempo del partido
      ORDER BY fecha_hora;
 
   v_id_partido      partido.id_partido%TYPE;
@@ -211,8 +213,6 @@ EXCEPTION
     END IF;
     DBMS_OUTPUT.PUT_LINE('Error en la carga masiva: ' || SQLERRM);
 END pr_carga_masiva_resultados;
-/
-
 
 -- BLOQUE B: Actualización de la tabla de posiciones por cada grupo
 
