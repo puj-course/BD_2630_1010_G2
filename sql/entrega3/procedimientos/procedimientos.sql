@@ -213,7 +213,7 @@ EXCEPTION
     END IF;
     DBMS_OUTPUT.PUT_LINE('Error en la carga masiva: ' || SQLERRM);
 END pr_carga_masiva_resultados;
-
+/
 -- BLOQUE B: Actualización de la tabla de posiciones por cada grupo
 
 -- 3. Tabla de posiciones de un grupo 
